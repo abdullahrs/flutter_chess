@@ -24,16 +24,17 @@ class _ChessState extends State<Chess> {
             fit: BoxFit.cover,
           ),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Padding(
-              padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-              child: ToolBar(reverse: false),
-            ),
-            Expanded(child: Board()),
-            ToolBar(reverse: true),
-          ],
+        child: Padding(
+          padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+          child: Column(
+            children: [
+              Flexible(flex: 1, child: ToolBar(reverse: false)),
+              Spacer(),
+              Flexible(flex: 6, child: Board()),
+              Spacer(),
+              Flexible(flex: 1, child: ToolBar(reverse: true)),
+            ],
+          ),
         ),
       ),
     );

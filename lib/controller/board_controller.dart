@@ -1,5 +1,7 @@
 import 'package:flutter_chess/config/board_map.dart';
+import 'package:flutter_chess/config/check_valid_moves.dart';
 import 'package:flutter_chess/config/pieces.dart';
+import 'package:flutter_chess/model/piece_model.dart';
 import 'package:get/get.dart';
 
 class BoardController extends GetxController {
@@ -21,6 +23,118 @@ class BoardController extends GetxController {
   int? previousPy;
 
   PieceColor colorToMove = PieceColor.White;
+
+  void normalMovement(int x, int y) {
+    if (movementIsAvailable(x, y)) {
+      Movement type = getMovementType(x, y);
+      if (type == Movement.Promote) {
+        // TODO: Promotion
+      } else {
+        Map<String, dynamic> data = {};
+        data['piece'] = PieceModel.fromObject(boardMatrix[pX!][pY!]);
+        data['preX'] = previousPx;
+        data['preY'] = previousPy;
+        data['px'] = pX;
+        data['py'] = pY;
+
+        boardMatrix[x][y] = PieceModel.fromObject(boardMatrix[pX!][pY!]);
+        boardMatrix[x][y].x = x;
+        boardMatrix[x][y].y = y;
+        boardMatrix[pX!][pY!] = null;
+        previousPx = x;
+        previousPy = y;
+        pX = x;
+        pY = y;
+        if (!kingIsSafe) {
+          boardMatrix[x][y] = null;
+          previousPx = boardMatrix[x][y];
+          previousPy = data['preY'];
+          pX = data['px'];
+          pY = data['py'];
+          boardMatrix[pX!][pY!] = data['piece'];
+          return;
+        }
+        boardMatrix[x][y].moved = true;
+        tapped = false;
+        if (type == Movement.Castles) {
+          castling(y);
+        }
+        observeKings(x, y);
+        colorToMove = PieceColor.Black == colorToMove
+            ? PieceColor.White
+            : PieceColor.Black;
+      }
+      availableMoves.clear();
+    }
+  }
+
+  void observeKings(int x, int y) {
+    if (boardMatrix[pX!][pY!].piece == Pieces.King) {
+      if (boardMatrix[pX!][pY!].color == PieceColor.Black) {
+        blackKingPosition = [x, y];
+      } else {
+        whiteKingPosition = [x, y];
+      }
+    }
+  }
+
+  void castling(int y) {
+    // TODO: Aradaki kareler atak altinda ise rook atma
+    // Short castling
+    if (y == 6) {
+      print("Short castling");
+      if (PieceColor.White == boardMatrix[pX!][pY!].color) {
+        boardMatrix[7][5] = boardMatrix[7][7];
+        boardMatrix[7][7] = null;
+        boardMatrix[7][5].moved = true;
+      } else {
+        boardMatrix[0][5] = boardMatrix[0][7];
+        boardMatrix[0][7] = null;
+        boardMatrix[0][5].moved = true;
+      }
+    }
+    // Long castling
+    if (y == 2) {
+      print("Long castling");
+      if (PieceColor.White == boardMatrix[pX!][pY!].color) {
+        boardMatrix[7][3] = boardMatrix[7][0];
+        boardMatrix[7][0] = null;
+        boardMatrix[7][3].moved = true;
+        boardMatrix[7][3].x = 7;
+        boardMatrix[7][3].y = 3;
+      } else {
+        boardMatrix[0][3] = boardMatrix[0][0];
+        boardMatrix[0][0] = null;
+        boardMatrix[0][3].moved = true;
+        boardMatrix[0][3].x = 0;
+        boardMatrix[0][3].y = 3;
+      }
+    }
+  }
+
+  void enPassantPawnTake(int x, int y) {
+    boardMatrix[previousPx!][y] = null;
+    normalMovement(x, y);
+  }
+
+  bool movementIsAvailable(int x, int y) {
+    for (dynamic l in availableMoves) {
+      if (l[0] == x && l[1] == y) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  Movement getMovementType(int x, int y) {
+    for (dynamic l in availableMoves) {
+      if (l[0] == x && l[1] == y) {
+        return l[2];
+      }
+    }
+    // for ignore_error
+    return Movement.Move;
+  }
 
   bool activeSquares(int x, int y) {
     for (dynamic d in availableMoves) {
@@ -46,7 +160,8 @@ class BoardController extends GetxController {
       if (boardMatrix[i][y] != null && boardMatrix[i][y].color == colorToMove) {
         break;
       }
-      if (boardMatrix[i][y] != null && boardMatrix[i][y].color != colorToMove) {
+      if (boardMatrix[i][y] == null) continue;
+      if (boardMatrix[i][y].color != colorToMove) {
         if (boardMatrix[i][y].piece == Pieces.Bishop ||
             boardMatrix[i][y].piece == Pieces.Pawn ||
             boardMatrix[i][y].piece == Pieces.Knight) {
@@ -64,7 +179,6 @@ class BoardController extends GetxController {
     while (r >= 0 && t < 8) {
       if (boardMatrix[r][t] != null && boardMatrix[r][t].color == colorToMove)
         break;
-
       if (boardMatrix[r][t] != null && boardMatrix[r][t].color != colorToMove) {
         if (boardMatrix[r][t].piece == Pieces.Pawn &&
             colorToMove == PieceColor.White &&
@@ -89,7 +203,8 @@ class BoardController extends GetxController {
     for (int j = y + 1; j < 8; j++) {
       if (boardMatrix[x][j] != null && boardMatrix[x][j].color == colorToMove)
         break;
-      if (boardMatrix[x][j] != null && boardMatrix[x][j].color != colorToMove) {
+      if (boardMatrix[x][j] == null) continue;
+      if (boardMatrix[x][j].color != colorToMove) {
         if (boardMatrix[x][j].piece == Pieces.Bishop ||
             boardMatrix[x][j].piece == Pieces.Pawn ||
             boardMatrix[x][j].piece == Pieces.Knight) {
@@ -181,16 +296,10 @@ class BoardController extends GetxController {
         }
         if (boardMatrix[x][j].piece == Pieces.Queen ||
             boardMatrix[x][j].piece == Pieces.Castle) {
-          print(boardMatrix[x][j].piece);
-          print(boardMatrix[x][j].color);
-          print(colorToMove);
-          print("$x $j");
           return true;
         }
       }
     }
-    print("check");
-
     // Top-left diagonal
     r = x - 1;
     t = y - 1;
@@ -271,6 +380,17 @@ class BoardController extends GetxController {
     // demektir.
     if (!kingIsSafe) {
       // TODO: Search
+      List<dynamic> temp = List.from(availableMoves);
+
+      for (int i = 0; i < 7; i++) {
+        for (int j = 0; j < 7; j++) {
+          if (boardMatrix[i][j] == null) continue;
+          if (boardMatrix[i][j].color == colorToMove) {
+            PieceMovements.calculateMoves(boardMatrix[i][j]);
+            for (dynamic move in availableMoves) {}
+          }
+        }
+      }
     }
     return false;
   }

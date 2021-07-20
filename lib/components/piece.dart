@@ -45,6 +45,13 @@ class Piece extends StatelessWidget {
         width: MediaQuery.of(context).size.width * (0.9),
         height: MediaQuery.of(context).size.height * (0.9),
         decoration: BoxDecoration(
+          border: Border.all(
+              width: 4,
+              color: _boardController.colorToMove != pieceModel.color &&
+                      _boardController.tapped &&
+                      _boardController.activeSquares(pieceModel.x, pieceModel.y)
+                  ? Colors.red
+                  : Colors.transparent),
           image: DecorationImage(
             image: AssetImage(pieceModel.imagePath),
             fit: BoxFit.cover,

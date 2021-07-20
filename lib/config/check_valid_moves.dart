@@ -10,7 +10,6 @@ class PieceMovements {
   static List<List<dynamic>?> pawnMoves(int x, int y, PieceColor pieceColor) {
     List<List<dynamic?>?> moves = [];
     int e = pieceColor == PieceColor.White ? -1 : 1;
-    print("pawnMoves : $x,$y [$pieceColor]");
     // Moves
     if (x == 1 || x == 6) {
       for (int i = 1; i <= 2; i++) {
@@ -462,7 +461,7 @@ class PieceMovements {
       } else if (boardMatrix[i][y] != null &&
               (boardMatrix[i][y].piece != Pieces.Queen ||
                   boardMatrix[i][y].piece != Pieces.Castle) ||
-          (boardMatrix[x][y].piece == Pieces.King && i == x - 1)) {
+          (boardMatrix[i][y].piece == Pieces.King && i == x - 1)) {
         return true;
       }
     }
@@ -478,16 +477,16 @@ class PieceMovements {
               boardMatrix[i][j].piece == Pieces.Knight)) {
         break;
       }
-      if (boardMatrix[i][y] != null &&
+      if (boardMatrix[i][j] != null &&
           pieceColor == PieceColor.Black &&
           boardMatrix[i][j].piece == Pieces.Pawn &&
           i == x - 1 &&
           j == y + 1) {
         return true;
-      } else if (boardMatrix[i][y] != null &&
+      } else if (boardMatrix[i][j] != null &&
           ((boardMatrix[i][j].piece == Pieces.Bishop ||
                   boardMatrix[i][j].piece == Pieces.Queen) ||
-              (boardMatrix[x][j].piece == Pieces.King &&
+              (boardMatrix[i][j].piece == Pieces.King &&
                   j == y + 1 &&
                   i == x - 1))) {
         return true;
@@ -522,16 +521,16 @@ class PieceMovements {
               boardMatrix[i][j].piece == Pieces.Knight)) {
         break;
       }
-      if (boardMatrix[i][y] != null &&
+      if (boardMatrix[i][j] != null &&
           pieceColor == PieceColor.White &&
           boardMatrix[i][j].piece == Pieces.Pawn &&
           i == x + 1 &&
           j == y + 1) {
         return true;
-      } else if (boardMatrix[i][y] != null &&
+      } else if (boardMatrix[i][j] != null &&
           ((boardMatrix[i][j].piece == Pieces.Bishop ||
                   boardMatrix[i][j].piece == Pieces.Queen) ||
-              (boardMatrix[x][j].piece == Pieces.King &&
+              (boardMatrix[i][j].piece == Pieces.King &&
                   j == y + 1 &&
                   i == x + 1))) {
         return true;
@@ -549,9 +548,9 @@ class PieceMovements {
               boardMatrix[i][y].piece == Pieces.Pawn ||
               boardMatrix[i][y].piece == Pieces.Knight)) break;
       if (boardMatrix[i][y] != null &&
-              (boardMatrix[i][y].piece == Pieces.Queen ||
+          ((boardMatrix[i][y].piece == Pieces.Queen ||
                   boardMatrix[i][y].piece == Pieces.Castle) ||
-          (boardMatrix[i][y].piece == Pieces.King && i == x + 1)) {
+              (boardMatrix[i][y].piece == Pieces.King && i == x + 1))) {
         return true;
       }
     }
@@ -567,16 +566,16 @@ class PieceMovements {
               boardMatrix[i][j].piece == Pieces.Knight)) {
         break;
       }
-      if (boardMatrix[i][y] != null &&
+      if (boardMatrix[i][j] != null &&
           (pieceColor == PieceColor.White &&
               boardMatrix[i][j].piece == Pieces.Pawn &&
               i == x + 1 &&
               j == y - 1)) {
         return true;
-      } else if (boardMatrix[i][y] != null &&
+      } else if (boardMatrix[i][j] != null &&
           ((boardMatrix[i][j].piece == Pieces.Bishop ||
                   boardMatrix[i][j].piece == Pieces.Queen) ||
-              (boardMatrix[x][j].piece == Pieces.King &&
+              (boardMatrix[i][j].piece == Pieces.King &&
                   j == y + 1 &&
                   i == x - 1))) {
         return true;
@@ -594,9 +593,9 @@ class PieceMovements {
               boardMatrix[x][j].piece == Pieces.Pawn ||
               boardMatrix[x][j].piece == Pieces.Knight)) break;
       if (boardMatrix[x][j] != null &&
-              (boardMatrix[x][j].piece == Pieces.Queen ||
+          ((boardMatrix[x][j].piece == Pieces.Queen ||
                   boardMatrix[x][j].piece == Pieces.Castle) ||
-          (boardMatrix[x][j].piece == Pieces.King && j == j - 1)) {
+              (boardMatrix[x][j].piece == Pieces.King && j == j - 1))) {
         return true;
       }
     }
@@ -612,16 +611,16 @@ class PieceMovements {
               boardMatrix[i][j].piece == Pieces.Knight)) {
         break;
       }
-      if (boardMatrix[i][y] != null &&
+      if (boardMatrix[i][j] != null &&
           pieceColor == PieceColor.Black &&
           boardMatrix[i][j].piece == Pieces.Pawn &&
           i == x - 1 &&
           j == y - 1) {
         return true;
-      } else if (boardMatrix[i][y] != null &&
+      } else if (boardMatrix[i][j] != null &&
           ((boardMatrix[i][j].piece == Pieces.Bishop ||
                   boardMatrix[i][j].piece == Pieces.Queen) ||
-              (boardMatrix[x][j].piece == Pieces.King &&
+              (boardMatrix[i][j].piece == Pieces.King &&
                   j == y - 1 &&
                   i == x - 1))) {
         return true;
