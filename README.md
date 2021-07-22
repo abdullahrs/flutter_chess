@@ -7,7 +7,7 @@
    - Captures [✓]
    - En-passant [✓]
    - Castling [✓]
- - **Promotion** [*X*]
+ - **Promotion** [✓]
  - **Check statuses** [✓]
  - **Checkmate** [*X*]
  - **Timer** [*X*]
