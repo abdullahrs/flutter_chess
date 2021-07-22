@@ -12,23 +12,24 @@ class PieceMovements {
     int e = pieceColor == PieceColor.White ? -1 : 1;
     // Moves
     if (x == 1 || x == 6) {
-      for (int i = 1; i <= 2; i++) {
-        int newX = x + i * e;
-        // Onunde tas varsa ilerlemesin
-        if (boardMatrix[newX][y] != null) {
-          break;
-        }
-        if (boardMatrix[newX][y] == null) {
-          moves.add([newX, y, Movement.Move]);
+      if (x + e == 0 || x + e == 7) {
+        if (boardMatrix[x + e][y] == null)
+          moves.add([x + e, y, Movement.Promote]);
+      } else {
+        for (int i = 1; i <= 2; i++) {
+          int newX = x + i * e;
+          // Onunde tas varsa ilerlemesin
+          if (boardMatrix[newX][y] != null) {
+            break;
+          }
+          if (boardMatrix[newX][y] == null) {
+            moves.add([newX, y, Movement.Move]);
+          }
         }
       }
     } else {
       if (boardMatrix[x + e][y] == null) {
-        if (x + e == 0 || x + e == 7) {
-          moves.add([x + e, y, Movement.Promote]);
-        } else {
-          moves.add([x + e, y, Movement.Move]);
-        }
+        moves.add([x + e, y, Movement.Move]);
       }
     }
 
@@ -459,9 +460,9 @@ class PieceMovements {
           i == x - 1) {
         return true;
       } else if (boardMatrix[i][y] != null &&
-              (boardMatrix[i][y].piece != Pieces.Queen ||
+          ((boardMatrix[i][y].piece != Pieces.Queen ||
                   boardMatrix[i][y].piece != Pieces.Castle) ||
-          (boardMatrix[i][y].piece == Pieces.King && i == x - 1)) {
+              (boardMatrix[i][y].piece == Pieces.King && i == x - 1))) {
         return true;
       }
     }
@@ -627,6 +628,50 @@ class PieceMovements {
       }
       i--;
       j--;
+    }
+    // Top
+    if (x + 2 <= 7) {
+      if (y - 1 >= 0) {
+        if (boardMatrix[x + 2][y - 1] != null &&
+            boardMatrix[x + 2][y - 1].color == pieceColor) return true;
+      }
+      if (y + 1 <= 7) {
+        if (boardMatrix[x + 2][y + 1] != null &&
+            boardMatrix[x + 2][y + 1].color == pieceColor) return true;
+      }
+    }
+    // Right
+    if (y + 2 <= 7) {
+      if (x - 1 >= 0) {
+        if (boardMatrix[x - 1][y + 2] != null &&
+            boardMatrix[x - 1][y + 2].color == pieceColor) return true;
+      }
+      if (x + 1 <= 7) {
+        if (boardMatrix[x + 1][y + 2] != null &&
+            boardMatrix[x + 1][y + 2].color == pieceColor) return true;
+      }
+    }
+    // Left
+    if (y - 2 >= 0) {
+      if (x - 1 >= 0) {
+        if (boardMatrix[x - 1][y - 2] != null &&
+            boardMatrix[x - 1][y - 2].color == pieceColor) return true;
+      }
+      if (x + 1 <= 7) {
+        if (boardMatrix[x + 1][y - 2] != null &&
+            boardMatrix[x + 1][y - 2].color == pieceColor) return true;
+      }
+    }
+    // Top left-right
+    if (x - 2 >= 0) {
+      if (y - 1 >= 0) {
+        if (boardMatrix[x - 2][y - 1] != null &&
+            boardMatrix[x - 2][y - 1].color == pieceColor) return true;
+      }
+      if (y + 1 <= 7) {
+        if (boardMatrix[x - 2][y + 1] != null &&
+            boardMatrix[x - 2][y + 1].color == pieceColor) return true;
+      }
     }
     return false;
   }

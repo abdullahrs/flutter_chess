@@ -57,7 +57,7 @@ class Board extends StatelessWidget {
     );
   }
 
-  void onClickEmptySquare(BoardController _boardController, int x, int y) {
+  Future<void> onClickEmptySquare(BoardController _boardController, int x, int y) async{
     if (_boardController.tapped &&
         boardMatrix[_boardController.pX!][_boardController.pY!].color ==
             _boardController.colorToMove) {
@@ -69,7 +69,7 @@ class Board extends StatelessWidget {
               boardMatrix[_boardController.pX!][y].color) {
         _boardController.enPassantPawnTake(x, y);
       } else {
-        _boardController.normalMovement(x, y);
+        await _boardController.normalMovement(x, y);
       }
       _boardController.update();
     }

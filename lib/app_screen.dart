@@ -13,6 +13,13 @@ class Chess extends StatefulWidget {
 
 class _ChessState extends State<Chess> {
   BoardController boardController = Get.put(BoardController());
+  
+  @override
+  void initState() {
+    super.initState();
+    boardController.controllerContext = context;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
