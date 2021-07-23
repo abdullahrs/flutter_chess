@@ -14,7 +14,7 @@ class Piece extends StatelessWidget {
   Widget build(BuildContext context) {
     final BoardController _boardController = Get.find();
     return GestureDetector(
-      onTap: () {
+      onTap: () async{
         // Eger hicbir tasa dokunulmadiysa ya da bir tas seciliyken baska
         // bir tas secilirse
         // If no piece is touched, or if a different piece is selected
@@ -23,7 +23,7 @@ class Piece extends StatelessWidget {
             (_boardController.pX != pieceModel.x ||
                 _boardController.pY != pieceModel.y)) {
           if (_boardController.tapped) {
-            _boardController.onClickForCapture(pieceModel);
+            await _boardController.onClickForCapture(pieceModel);
           } else {
             // Sadece sirasi gelen taraf oynayabiliyor
             // Only the player whose turn it is can play

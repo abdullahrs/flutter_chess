@@ -371,7 +371,9 @@ class PieceMovements {
     bool longCastlingControl = true;
     switch (pieceColor) {
       case PieceColor.White:
-        if (!boardMatrix[x][y].moved && !boardMatrix[7][0].moved) {
+        if (boardMatrix[7][0] != null &&
+            !boardMatrix[x][y].moved &&
+            !boardMatrix[7][0].moved) {
           for (int j = y - 1; j > 0; j--) {
             if (boardMatrix[7][j] != null) {
               longCastlingControl = false;
@@ -384,7 +386,9 @@ class PieceMovements {
         }
         break;
       case PieceColor.Black:
-        if (!boardMatrix[x][y].moved && !boardMatrix[0][0].moved) {
+        if (boardMatrix[0][0] != null &&
+            !boardMatrix[x][y].moved &&
+            !boardMatrix[0][0].moved) {
           for (int j = y - 1; j > 0; j--) {
             if (boardMatrix[0][j] != null) {
               longCastlingControl = false;
@@ -405,7 +409,8 @@ class PieceMovements {
     switch (pieceColor) {
       case PieceColor.White:
         {
-          if (!boardMatrix[x][y].moved &&
+          if (boardMatrix[7][7] != null &&
+              !boardMatrix[x][y].moved &&
               (boardMatrix[7][7] != null && !boardMatrix[7][7].moved)) {
             for (int j = y + 1; j < 7; j++) {
               if (boardMatrix[7][j] != null) {
@@ -421,7 +426,8 @@ class PieceMovements {
         }
       case PieceColor.Black:
         {
-          if (!boardMatrix[x][y].moved &&
+          if (boardMatrix[0][7] != null &&
+              !boardMatrix[x][y].moved &&
               (boardMatrix[0][7] != null && !boardMatrix[0][7].moved)) {
             for (int j = y + 1; j < 7; j++) {
               if (boardMatrix[0][j] != null) {

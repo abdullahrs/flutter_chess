@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chess/components/game_over_dialog.dart';
 import 'package:flutter_chess/components/promotion_dialog.dart';
 import 'package:flutter_chess/config/board_map.dart';
 import 'package:flutter_chess/config/check_valid_moves.dart';
@@ -160,6 +161,9 @@ class BoardController extends GetxController {
         boardMatrix[pX!][pY!] = data['capturer_piece'];
         return;
       }
+      if (pX == 0 || pX == 7) {
+        await promote(pX!, pY!);
+      }
       tapped = false;
       boardMatrix[pieceModel.x][pieceModel.y].moved = true;
       await changeColorToMove();
@@ -226,13 +230,20 @@ class BoardController extends GetxController {
   }
 
   Future<void> changeColorToMove() async {
+    PieceColor temp = colorToMove;
     colorToMove =
         PieceColor.Black == colorToMove ? PieceColor.White : PieceColor.Black;
-    print("gameOver status : $gameOver\ncolor to move : $colorToMove");
     bool control = await gameOver;
+    print("gameOver status : $control\ncolor to move : $colorToMove");
     if (control) {
-      // Get.snackbar("Check Mate!", "Game Over Mate");
       print("Check Mate!");
+      await showDialog(
+        context: controllerContext!,
+        builder: (_) => GameOverDialog(
+          color: temp,
+        ),
+        barrierDismissible: false,
+      ).then((value) => resetVars());
     }
   }
 
@@ -308,7 +319,6 @@ class BoardController extends GetxController {
             boardMatrix[r][t].piece != Pieces.Bishop) {
           break;
         }
-        print('check $r $t');
 
         if (boardMatrix[r][t].piece == Pieces.Queen ||
             boardMatrix[r][t].piece == Pieces.Bishop) {
@@ -506,8 +516,8 @@ class BoardController extends GetxController {
         for (List<dynamic> l in boardMatrix) List.from(l)
       ];
       PieceColor tempColor = colorToMove;
-      for (int i = 0; i < 7; i++) {
-        for (int j = 0; j < 7; j++) {
+      for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
           if (boardMatrix[i][j] == null) continue;
           if (boardMatrix[i][j].color == colorToMove) {
             PieceMovements.calculateMoves(boardMatrix[i][j]);
@@ -519,7 +529,7 @@ class BoardController extends GetxController {
               if (type == Movement.Move) {
                 await normalMovement(x, y);
               } else if (type == Movement.Take) {
-                onClickForCapture(boardMatrix[i][j]);
+                await onClickForCapture(boardMatrix[i][j]);
               } else if (type == Movement.Promote) {
                 await promote(x, y);
               }
@@ -539,5 +549,18 @@ class BoardController extends GetxController {
       return true;
     }
     return false;
+  }
+
+  void resetVars() {
+    availableMoves.clear();
+    tapped = false;
+    whiteKingPosition = [7, 4];
+    blackKingPosition = [0, 4];
+    pX = null;
+    pY = null;
+    previousPx = null;
+    previousPy = null;
+    colorToMove = PieceColor.White;
+    update();
   }
 }
