@@ -38,8 +38,8 @@ class Board extends StatelessWidget {
 
   GestureDetector emptySquare(BoardController _boardController, int x, int y) {
     return GestureDetector(
-      onTap: () {
-        onClickEmptySquare(_boardController, x, y);
+      onTap: () async{
+        await onClickEmptySquare(_boardController, x, y);
       },
       child: Container(
         decoration: BoxDecoration(

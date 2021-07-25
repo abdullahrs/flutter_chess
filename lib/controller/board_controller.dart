@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chess/components/duration_picker_dialog.dart';
 import 'package:flutter_chess/components/game_over_dialog.dart';
 import 'package:flutter_chess/components/promotion_dialog.dart';
 import 'package:flutter_chess/config/board_map.dart';
@@ -13,6 +14,15 @@ class BoardController extends GetxController {
   RxBool _tapped = false.obs;
 
   BuildContext? controllerContext;
+
+  RxInt _whiteTime = 0.obs;
+  RxInt _blackTime = 0.obs;
+  int increment = 0;
+
+  int get whiteTime => _whiteTime.value;
+  set whiteTime(int v) => _whiteTime.value = v;
+  int get blackTime => _blackTime.value;
+  set blackTime(int v) => _blackTime.value = v;
 
   bool get tapped => _tapped.value;
   set tapped(bool v) => _tapped.value = v;
@@ -68,8 +78,8 @@ class BoardController extends GetxController {
       if (type == Movement.Promote) {
         await promote(x, y);
       }
+      observeKings(x, y);
       await changeColorToMove();
-
       availableMoves.clear();
     }
   }
@@ -161,7 +171,7 @@ class BoardController extends GetxController {
         boardMatrix[pX!][pY!] = data['capturer_piece'];
         return;
       }
-      if (pX == 0 || pX == 7) {
+      if ((pX == 0 || pX == 7) && boardMatrix[pX!][pY!].piece == Pieces.Pawn) {
         await promote(pX!, pY!);
       }
       tapped = false;
@@ -182,7 +192,6 @@ class BoardController extends GetxController {
   }
 
   void castling(int y) {
-    // TODO: Aradaki kareler atak altinda ise rook atma
     // Short castling
     if (y == 6) {
       print("Short castling");
@@ -190,10 +199,14 @@ class BoardController extends GetxController {
         boardMatrix[7][5] = boardMatrix[7][7];
         boardMatrix[7][7] = null;
         boardMatrix[7][5].moved = true;
+        boardMatrix[7][5].x = 7;
+        boardMatrix[7][5].y = 5;
       } else {
         boardMatrix[0][5] = boardMatrix[0][7];
         boardMatrix[0][7] = null;
         boardMatrix[0][5].moved = true;
+        boardMatrix[0][5].x = 0;
+        boardMatrix[0][5].y = 5;
       }
     }
     // Long castling
@@ -231,19 +244,18 @@ class BoardController extends GetxController {
 
   Future<void> changeColorToMove() async {
     PieceColor temp = colorToMove;
+    if (colorToMove == PieceColor.Black) {
+      blackTime += increment;
+    } else {
+      whiteTime += increment;
+    }
     colorToMove =
         PieceColor.Black == colorToMove ? PieceColor.White : PieceColor.Black;
     bool control = await gameOver;
     print("gameOver status : $control\ncolor to move : $colorToMove");
     if (control) {
       print("Check Mate!");
-      await showDialog(
-        context: controllerContext!,
-        builder: (_) => GameOverDialog(
-          color: temp,
-        ),
-        barrierDismissible: false,
-      ).then((value) => resetVars());
+      await showGameOverDialog(temp, GameOverStatus.CheckMate);
     }
   }
 
@@ -311,8 +323,8 @@ class BoardController extends GetxController {
       if (boardMatrix[r][t] != null && boardMatrix[r][t].color != colorToMove) {
         if (boardMatrix[r][t].piece == Pieces.Pawn &&
             colorToMove == PieceColor.White &&
-            r == x - 2 &&
-            t == y + 2) {
+            r == x - 1 &&
+            t == y + 1) {
           return true;
         }
         if (boardMatrix[r][t].piece != Pieces.Queen &&
@@ -353,8 +365,8 @@ class BoardController extends GetxController {
       if (boardMatrix[r][t] != null && boardMatrix[r][t].color != colorToMove) {
         if (boardMatrix[r][t].piece == Pieces.Pawn &&
             colorToMove == PieceColor.Black &&
-            r == x + 2 &&
-            t == y + 2) {
+            r == x + 1 &&
+            t == y + 1) {
           return true;
         }
         if (boardMatrix[r][t].piece != Pieces.Queen &&
@@ -393,8 +405,8 @@ class BoardController extends GetxController {
       if (boardMatrix[r][t] != null && boardMatrix[r][t].color != colorToMove) {
         if (boardMatrix[r][t].piece == Pieces.Pawn &&
             colorToMove == PieceColor.Black &&
-            r == x + 2 &&
-            t == y - 2) {
+            r == x + 1 &&
+            t == y - 1) {
           return true;
         }
         if (boardMatrix[r][t].piece != Pieces.Queen &&
@@ -433,8 +445,8 @@ class BoardController extends GetxController {
       if (boardMatrix[r][t] != null && boardMatrix[r][t].color != colorToMove) {
         if (boardMatrix[r][t].piece == Pieces.Pawn &&
             colorToMove == PieceColor.White &&
-            r == x - 2 &&
-            t == y - 2) {
+            r == x - 1 &&
+            t == y - 1) {
           return true;
         }
         if (boardMatrix[r][t].piece != Pieces.Queen &&
@@ -462,7 +474,6 @@ class BoardController extends GetxController {
             boardMatrix[x - 2][y + 1].color != colorToMove)) {
       return true;
     }
-
     // Knight Right
     if ((y + 2 < 8 &&
             x + 1 < 8 &&
@@ -524,14 +535,11 @@ class BoardController extends GetxController {
             for (dynamic move in availableMoves) {
               int x = move[0];
               int y = move[1];
-              Movement type = move[2];
               onClickPiece(boardMatrix[i][j]);
-              if (type == Movement.Move) {
+              if (boardMatrix[x][y] == null) {
                 await normalMovement(x, y);
-              } else if (type == Movement.Take) {
+              } else {
                 await onClickForCapture(boardMatrix[i][j]);
-              } else if (type == Movement.Promote) {
-                await promote(x, y);
               }
               if (kingIsSafe) {
                 availableMoves.value = temp;
@@ -561,6 +569,36 @@ class BoardController extends GetxController {
     previousPx = null;
     previousPy = null;
     colorToMove = PieceColor.White;
+    whiteTime = -1;
+    blackTime = -1;
     update();
+  }
+
+  Future<void> showGameOverDialog(
+      PieceColor color, GameOverStatus gameOverStatus) async {
+    await showDialog(
+      context: controllerContext!,
+      builder: (_) => GameOverDialog(
+        color: color,
+        gameOverStatus: gameOverStatus,
+      ),
+      barrierDismissible: false,
+    ).then((value) async {
+      resetVars();
+      await showDurationPickerDialog();
+    });
+  }
+
+  Future<void> showDurationPickerDialog() async {
+    await showDialog(
+        context: controllerContext!,
+        barrierDismissible: false,
+        builder: (_) => DurationPickerDialog()).then((value) {
+      if (value.isNotEmpty) {
+        whiteTime = value[0] * 60;
+        blackTime = value[0] * 60;
+        increment = value[1];
+      }
+    });
   }
 }

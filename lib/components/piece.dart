@@ -14,7 +14,7 @@ class Piece extends StatelessWidget {
   Widget build(BuildContext context) {
     final BoardController _boardController = Get.find();
     return GestureDetector(
-      onTap: () async{
+      onTap: () async {
         // Eger hicbir tasa dokunulmadiysa ya da bir tas seciliyken baska
         // bir tas secilirse
         // If no piece is touched, or if a different piece is selected

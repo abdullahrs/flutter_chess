@@ -18,3 +18,10 @@ enum Movement{
   Castles,
   Promote
 }
+
+enum GameOverStatus{
+  CheckMate,
+  Resign,
+  Draw,
+  OnTime
+}

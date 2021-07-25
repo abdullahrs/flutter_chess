@@ -319,6 +319,18 @@ class PieceMovements {
           boardMatrix[x][y + 1] == null ? Movement.Move : Movement.Take
         ]);
     }
+    // Bottom-right
+    if ((x + 1 < 8 && y + 1 < 8) &&
+        (boardMatrix[x + 1][y + 1] == null ||
+            (boardMatrix[x + 1][y + 1] != null &&
+                boardMatrix[x + 1][y + 1].color != pieceColor))) {
+      if (!squareHasDefender(x + 1, y + 1, oppositeColor))
+        moves.add([
+          x + 1,
+          y + 1,
+          boardMatrix[x + 1][y + 1] == null ? Movement.Move : Movement.Take
+        ]);
+    }
     // Bottom
     if (x + 1 < 8 &&
         (boardMatrix[x + 1][y] == null ||
@@ -360,12 +372,13 @@ class PieceMovements {
         (boardMatrix[x - 1][y - 1] == null ||
             (boardMatrix[x - 1][y - 1] != null &&
                 boardMatrix[x - 1][y - 1].color != pieceColor))) {
-      if (!squareHasDefender(x - 1, y - 1, oppositeColor))
+      if (!squareHasDefender(x - 1, y - 1, oppositeColor)) {
         moves.add([
           x - 1,
           y - 1,
           boardMatrix[x - 1][y - 1] == null ? Movement.Move : Movement.Take
         ]);
+      }
     }
     // Long castling
     bool longCastlingControl = true;
@@ -375,7 +388,8 @@ class PieceMovements {
             !boardMatrix[x][y].moved &&
             !boardMatrix[7][0].moved) {
           for (int j = y - 1; j > 0; j--) {
-            if (boardMatrix[7][j] != null) {
+            if (boardMatrix[7][j] != null ||
+                squareHasDefender(7, j, PieceColor.Black)) {
               longCastlingControl = false;
               break;
             }
@@ -390,7 +404,8 @@ class PieceMovements {
             !boardMatrix[x][y].moved &&
             !boardMatrix[0][0].moved) {
           for (int j = y - 1; j > 0; j--) {
-            if (boardMatrix[0][j] != null) {
+            if (boardMatrix[0][j] != null ||
+                squareHasDefender(0, j, PieceColor.White)) {
               longCastlingControl = false;
               break;
             }
@@ -411,9 +426,11 @@ class PieceMovements {
         {
           if (boardMatrix[7][7] != null &&
               !boardMatrix[x][y].moved &&
-              (boardMatrix[7][7] != null && !boardMatrix[7][7].moved)) {
+              boardMatrix[7][7] != null &&
+              !boardMatrix[7][7].moved) {
             for (int j = y + 1; j < 7; j++) {
-              if (boardMatrix[7][j] != null) {
+              if (boardMatrix[7][j] != null ||
+                  squareHasDefender(7, j, PieceColor.Black)) {
                 shortCastlingControl = false;
                 break;
               }
@@ -430,7 +447,8 @@ class PieceMovements {
               !boardMatrix[x][y].moved &&
               (boardMatrix[0][7] != null && !boardMatrix[0][7].moved)) {
             for (int j = y + 1; j < 7; j++) {
-              if (boardMatrix[0][j] != null) {
+              if (boardMatrix[0][j] != null ||
+                  squareHasDefender(0, j, PieceColor.White)) {
                 shortCastlingControl = false;
                 break;
               }

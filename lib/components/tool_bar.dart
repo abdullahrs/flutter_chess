@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chess/components/timer.dart';
+import 'package:flutter_chess/config/pieces.dart';
+import 'package:flutter_chess/controller/board_controller.dart';
+import 'package:get/get.dart';
 
 class ToolBar extends StatelessWidget {
-  final bool reverse;
-  const ToolBar({Key? key, required this.reverse}) : super(key: key);
+  final PieceColor pieceColor;
+  ToolBar({
+    Key? key,
+    required this.pieceColor,
+  }) : super(key: key);
+
+  final BoardController _boardController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -11,21 +19,30 @@ class ToolBar extends StatelessWidget {
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height * (0.1),
       decoration: BoxDecoration(
-        color: Colors.brown,
+        color: Colors.transparent,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children:
-            reverse ? createElements().reversed.toList() : createElements(),
+        children: pieceColor == PieceColor.White
+            ? createElements().reversed.toList()
+            : createElements(),
       ),
     );
   }
 
   List<Widget> createElements() => [
-        ChessTimer(),
-        Spacer(),
-        IconButton(icon: Icon(Icons.stop), onPressed: () {}),
+        ChessTimer(
+          pieceColor: pieceColor,
+        ),
         Spacer(flex: 3),
-        IconButton(icon: Icon(Icons.flag), onPressed: () {}),
+        IconButton(
+            icon: Icon(Icons.flag),
+            onPressed: () async {
+              await _boardController.showGameOverDialog(
+                  _boardController.colorToMove == PieceColor.Black
+                      ? PieceColor.White
+                      : PieceColor.Black,
+                  GameOverStatus.Resign);
+            }),
       ];
 }
