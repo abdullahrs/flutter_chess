@@ -1,25 +1,21 @@
 part of 'board_cubit.dart';
 
-enum BoardStatus { initial,ready ,whitePlayed, blackPlayed, reset }
+enum BoardStatus { initial, ready, move, checkMate, stealmate, draw, reset }
 
 class BoardState extends Equatable {
   const BoardState({
-    this.board,
     required this.stateStatus,
   });
 
   final BoardStatus stateStatus;
-  final List<List<Piece?>>? board;
 
   @override
-  List<Object?> get props => [stateStatus, board];
+  List<Object?> get props => [stateStatus];
 
   BoardState copyWith({
     BoardStatus? newStatus,
     List<List<Piece?>>? newBoard,
   }) {
-    return BoardState(
-        board: newBoard ?? board, stateStatus: newStatus ?? stateStatus);
+    return BoardState(stateStatus: newStatus ?? stateStatus);
   }
-
 }

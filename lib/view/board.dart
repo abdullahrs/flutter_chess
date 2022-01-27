@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_chess/viewmodel/board_cubit.dart';
+import '../viewmodel/board_cubit.dart';
 
 class ChessBoard extends StatelessWidget {
   const ChessBoard({Key? key}) : super(key: key);
@@ -18,15 +18,22 @@ class ChessBoard extends StatelessWidget {
         itemBuilder: (BuildContext context, int index) {
           int x = index ~/ 8;
           int y = index % 8;
-          return BlocConsumer<BoardCubit, BoardState>(
-            listener: (context, state) {},
+          return BlocSelector<BoardCubit, BoardState, BoardState>(
+            selector: (state) {
+              return state;
+            },
             builder: (context, state) {
-              return Container(
-                decoration: BoxDecoration(
-                    color: (((index) ~/ 8) + index + 1) % 2 == 0
-                        ? const Color(0xFFb58763) 
-                        : const Color(0xFFf0dab5)),
-                child: state.board?[x][y],
+              return BlocConsumer<BoardCubit, BoardState>(
+                listener: (context, state) {},
+                builder: (context, state) {
+                  return Container(
+                    decoration: BoxDecoration(
+                        color: (((index) ~/ 8) + index + 1) % 2 == 0
+                            ? const Color(0xFFb58763)
+                            : const Color(0xFFf0dab5)),
+                    child: context.read<BoardCubit>().board[x][y],
+                  );
+                },
               );
             },
           );

@@ -19,13 +19,13 @@ class ChessPage extends StatelessWidget {
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Spacer(flex: 2),
+            children: const [
+              Spacer(flex: 2),
               Flexible(
                 flex: 6,
                 child: ChessBoard(),
               ),
-              const Spacer(flex: 2),
+              Spacer(flex: 2),
             ],
           ),
         ),
