@@ -3,9 +3,10 @@ import '../model/piece_position_model.dart';
 import 'piece_colors.dart';
 import '../model/piece_model.dart';
 
-import '../components/piece.dart';
+import '../components/board/piece.dart';
 import 'pieces.dart';
 
+/// Black pieces
 const Piece _blackCastle = Piece(
   pieceModel: PieceModel(
     piece: Pieces.castle,
@@ -43,9 +44,10 @@ const Piece _blackPawn = Piece(
     pieceModel: PieceModel(
   piece: Pieces.pawn,
   color: PieceColor.black,
-  piecePosition: PiecePosition(0, 0),
+  piecePosition: PiecePosition(1, 0),
 ));
 
+/// White pieces
 const Piece _whiteCastle = Piece(
     pieceModel: PieceModel(
   piece: Pieces.castle,

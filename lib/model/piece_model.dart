@@ -6,6 +6,7 @@ class PieceModel {
   final Pieces piece;
   final PieceColor color;
   final PiecePosition piecePosition;
+
   const PieceModel(
       {required this.piece, required this.color, required this.piecePosition});
 

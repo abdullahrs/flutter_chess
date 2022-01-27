@@ -4,4 +4,5 @@ enum MovementType{
   shortCastle,
   longCastle,
   enPassant, 
+  promote
 }
