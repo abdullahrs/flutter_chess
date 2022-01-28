@@ -33,6 +33,7 @@ List<Movement> _calculateLineMoves({
     if (move != null) {
       if (move.positionX == -1) break;
       moves.add(move);
+      if (move.movementType == MovementType.capture) break;
     }
 
     i = _calcIndexForLines(direction, Coordinate.x, i);

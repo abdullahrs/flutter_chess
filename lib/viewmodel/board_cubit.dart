@@ -51,11 +51,12 @@ class BoardCubit extends Cubit<BoardState> {
               square.pieceModel, board,
               previousBlackMove: lastBlackMove,
               previousWhiteMove: lastWhiteMove);
-          emit(MovesCalculated(_availableMoves));
         } else {
           _availableMoves = PieceMovementCalculator.instance
               .calculateMoves(square.pieceModel, board);
+          
         }
+        emit(MovesCalculated(_availableMoves));
       } else {
         unSelectSquare();
       }

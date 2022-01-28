@@ -160,7 +160,6 @@ class PieceMovementCalculator {
 
   List<Movement> _calculatePawnMoves(PieceModel model,
       Movement? previousWhiteMove, Movement? previousBlackMove) {
-    log("[PawnMoves] Position <${model.piecePosition.positionX}, ${model.piecePosition.positionY}>");
     int x = model.piecePosition.positionX;
     int y = model.piecePosition.positionY;
 
