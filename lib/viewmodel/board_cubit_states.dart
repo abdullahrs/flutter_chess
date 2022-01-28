@@ -25,21 +25,3 @@ class MovesCalculated extends BoardState {
 class OnClickReset extends BoardState {}
 
 class PieceMovement extends BoardState {}
-
-// class BoardState extends Equatable {
-//   const BoardState({
-//     required this.stateStatus,
-//   });
-
-//   final BoardStatus stateStatus;
-
-//   @override
-//   List<Object?> get props => [stateStatus];
-
-//   BoardState copyWith({
-//     BoardStatus? newStatus,
-//     List<List<Piece?>>? newBoard,
-//   }) {
-//     return BoardState(stateStatus: newStatus ?? stateStatus);
-//   }
-// }

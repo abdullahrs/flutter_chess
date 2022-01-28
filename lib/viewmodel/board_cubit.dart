@@ -1,11 +1,12 @@
 import 'dart:developer';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../constants/board_defination.dart';
 import '../constants/movement_types.dart';
 import '../constants/piece_colors.dart';
 import '../constants/pieces.dart';
 import '../model/piece_position_model.dart';
-import '../utility/calculate_legal_moves.dart';
+import '../utility/calculate_movements.dart';
 import '../model/movement_model.dart';
 import '../constants/initial_board.dart';
 import '../components/board/piece.dart';
@@ -15,7 +16,7 @@ part 'board_cubit_states.dart';
 class BoardCubit extends Cubit<BoardState> {
   BoardCubit() : super(BoardInitial());
 
-  final List<List<Piece?>> board = [...kInitialBoard];
+  final Board board = [...kInitialBoard];
 
   Movement? lastWhiteMove;
   Movement? lastBlackMove;
@@ -36,6 +37,9 @@ class BoardCubit extends Cubit<BoardState> {
 
   List<Movement> _availableMoves = [];
 
+  PiecePosition whiteKingPosition = const PiecePosition(7, 4);
+  PiecePosition blackKingPosition = const PiecePosition(0, 4);
+
   void onClickSquare(int x, int y) {
     Piece? square = board[x][y];
     log("[onClickSquare] Position<$x , $y> Square value : ${square?.pieceModel.piece}");
@@ -48,13 +52,20 @@ class BoardCubit extends Cubit<BoardState> {
         // For checking en-passant move
         if (square.pieceModel.piece == Pieces.pawn) {
           _availableMoves = PieceMovementCalculator.instance.calculateMoves(
-              square.pieceModel, board,
-              previousBlackMove: lastBlackMove,
-              previousWhiteMove: lastWhiteMove);
+            square.pieceModel,
+            board,
+            previousBlackMove: lastBlackMove,
+            previousWhiteMove: lastWhiteMove,
+            blackKingPos: blackKingPosition,
+            whiteKingPos: whiteKingPosition,
+          );
         } else {
-          _availableMoves = PieceMovementCalculator.instance
-              .calculateMoves(square.pieceModel, board);
-          
+          _availableMoves = PieceMovementCalculator.instance.calculateMoves(
+            square.pieceModel,
+            board,
+            blackKingPos: blackKingPosition,
+            whiteKingPos: whiteKingPosition,
+          );
         }
         emit(MovesCalculated(_availableMoves));
       } else {
@@ -96,6 +107,16 @@ class BoardCubit extends Cubit<BoardState> {
   }
 
   void move(Movement move) {
+    if (!move.isLegal) return;
+    if (board[move.previousX][move.previousY]!.pieceModel.piece ==
+        Pieces.king) {
+      if (board[move.previousX][move.previousY]!.pieceModel.color ==
+          PieceColor.white) {
+        whiteKingPosition = PiecePosition(move.previousX, move.previousY);
+      } else {
+        blackKingPosition = PiecePosition(move.previousX, move.previousY);
+      }
+    }
     board[move.positionX][move.positionY] = Piece(
       pieceModel: board[move.previousX][move.previousY]!.pieceModel.copyWith(
           piecePosition: PiecePosition(move.positionX, move.positionY)),

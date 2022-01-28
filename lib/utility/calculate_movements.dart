@@ -1,26 +1,42 @@
 import 'dart:developer';
 
-import '../constants/movement_types.dart';
-import '../constants/piece_colors.dart';
 
 import '../components/board/piece.dart';
+
+import '../constants/board_defination.dart';
+import '../constants/movement_types.dart';
+import '../constants/piece_colors.dart';
+import '../constants/directions.dart';
 import '../constants/pieces.dart';
+
+import '../model/piece_position_model.dart';
 import '../model/movement_model.dart';
 import '../model/piece_model.dart';
 
+import 'calculate_indexes.dart';
+import 'move_police.dart';
+
 part 'calculator_helper.dart';
 
-class PieceMovementCalculator {
+class PieceMovementCalculator extends MovePolice {
   static final PieceMovementCalculator instance =
       PieceMovementCalculator._ctor();
 
   PieceMovementCalculator._ctor();
 
-  List<List<Piece?>> boardMatrix = [];
+  Board boardMatrix = [];
 
-  List<Movement> calculateMoves(PieceModel? model, List<List<Piece?>> board,
-      {Movement? previousWhiteMove, Movement? previousBlackMove}) {
-    boardMatrix = board;
+  late PiecePosition whiteKingPosition;
+  late PiecePosition blackKingPosition;
+
+  List<Movement> calculateMoves(PieceModel? model, Board board,
+      {Movement? previousWhiteMove,
+      Movement? previousBlackMove,
+      required PiecePosition whiteKingPos,
+      required PiecePosition blackKingPos}) {
+    boardMatrix = [...board];
+    whiteKingPosition = whiteKingPos;
+    blackKingPosition = blackKingPos;
     log("[calculateMoves] Piece : ${model?.piece}");
     switch (model?.piece) {
       case Pieces.king:
@@ -98,22 +114,22 @@ class PieceMovementCalculator {
     // Bottom left to top right diagonal
     moves.addAll(_calculateLineMoves(
         boardMatrix: boardMatrix,
-        direction: _Direction.fromBLTTR,
+        direction: Direction.fromBLTTR,
         model: model));
     // Bottom right to top left diagonal
     moves.addAll(_calculateLineMoves(
         boardMatrix: boardMatrix,
-        direction: _Direction.fromBRTTL,
+        direction: Direction.fromBRTTL,
         model: model));
     // Top left to bottom right diagonal
     moves.addAll(_calculateLineMoves(
         boardMatrix: boardMatrix,
-        direction: _Direction.fromTLTBR,
+        direction: Direction.fromTLTBR,
         model: model));
     // Top right to bottom left diagonal
     moves.addAll(_calculateLineMoves(
         boardMatrix: boardMatrix,
-        direction: _Direction.fromTRTBL,
+        direction: Direction.fromTRTBL,
         model: model));
     return moves;
   }
@@ -123,19 +139,19 @@ class PieceMovementCalculator {
 
     // Towards the white pieces
     moves.addAll(_calculateLineMoves(
-        boardMatrix: boardMatrix, direction: _Direction.bottom, model: model));
+        boardMatrix: boardMatrix, direction: Direction.bottom, model: model));
 
     // Towards the black pieces
     moves.addAll(_calculateLineMoves(
-        boardMatrix: boardMatrix, direction: _Direction.top, model: model));
+        boardMatrix: boardMatrix, direction: Direction.top, model: model));
 
     // To the right of the board relative to white, (towards the white's kingside)
     moves.addAll(_calculateLineMoves(
-        boardMatrix: boardMatrix, direction: _Direction.right, model: model));
+        boardMatrix: boardMatrix, direction: Direction.right, model: model));
 
     // To the right of the board relative to white, (towards the white's quennside)
     moves.addAll(_calculateLineMoves(
-        boardMatrix: boardMatrix, direction: _Direction.left, model: model));
+        boardMatrix: boardMatrix, direction: Direction.left, model: model));
     return moves;
   }
 
@@ -144,16 +160,16 @@ class PieceMovementCalculator {
 
     // Top
     moves.addAll(_calculateJumpMoves(
-        boardMatrix: boardMatrix, direction: _Direction.top, model: model));
+        boardMatrix: boardMatrix, direction: Direction.top, model: model));
     // Right
     moves.addAll(_calculateJumpMoves(
-        boardMatrix: boardMatrix, direction: _Direction.right, model: model));
+        boardMatrix: boardMatrix, direction: Direction.right, model: model));
     // Bottom
     moves.addAll(_calculateJumpMoves(
-        boardMatrix: boardMatrix, direction: _Direction.bottom, model: model));
+        boardMatrix: boardMatrix, direction: Direction.bottom, model: model));
     // Left
     moves.addAll(_calculateJumpMoves(
-        boardMatrix: boardMatrix, direction: _Direction.left, model: model));
+        boardMatrix: boardMatrix, direction: Direction.left, model: model));
 
     return moves;
   }
@@ -180,8 +196,20 @@ class PieceMovementCalculator {
           positionX: x + 1 * sign,
           positionY: y,
           movementType: MovementType.promote,
-          // TODO: check if king is under attack
-          isLegal: true,
+          isLegal: moveIsLegal(
+            board: boardMatrix,
+            colorToMove: model.color,
+            kingPosition: model.color == PieceColor.white
+                ? whiteKingPosition
+                : blackKingPosition,
+            movement: Movement(
+                previousX: x,
+                previousY: y,
+                positionX: x + 1 * sign,
+                positionY: y,
+                movementType: MovementType.promote,
+                isLegal: true),
+          ),
         ),
       );
     }
@@ -194,8 +222,20 @@ class PieceMovementCalculator {
           positionX: x + 1 * sign,
           positionY: y,
           movementType: MovementType.normal,
-          // TODO: check if king is under attack
-          isLegal: true,
+          isLegal: moveIsLegal(
+            board: boardMatrix,
+            colorToMove: model.color,
+            kingPosition: model.color == PieceColor.white
+                ? whiteKingPosition
+                : blackKingPosition,
+            movement: Movement(
+                previousX: x,
+                previousY: y,
+                positionX: x + 1 * sign,
+                positionY: y,
+                movementType: MovementType.normal,
+                isLegal: true),
+          ),
         ),
       );
     }
@@ -209,8 +249,20 @@ class PieceMovementCalculator {
             positionX: x + 2 * sign,
             positionY: y,
             movementType: MovementType.normal,
-            // TODO: check if king is under attack
-            isLegal: true,
+            isLegal: moveIsLegal(
+              board: boardMatrix,
+              colorToMove: model.color,
+              kingPosition: model.color == PieceColor.white
+                  ? whiteKingPosition
+                  : blackKingPosition,
+              movement: Movement(
+                  previousX: x,
+                  previousY: y,
+                  positionX: x + 2 * sign,
+                  positionY: y,
+                  movementType: MovementType.normal,
+                  isLegal: true),
+            ),
           ),
         );
       }
@@ -226,8 +278,20 @@ class PieceMovementCalculator {
             positionX: x + 1 * sign,
             positionY: y - 1,
             movementType: MovementType.capture,
-            // TODO: check if king is under attack
-            isLegal: true,
+            isLegal: moveIsLegal(
+              board: boardMatrix,
+              colorToMove: model.color,
+              kingPosition: model.color == PieceColor.white
+                  ? whiteKingPosition
+                  : blackKingPosition,
+              movement: Movement(
+                  previousX: x,
+                  previousY: y,
+                  positionX: x + 1 * sign,
+                  positionY: y - 1,
+                  movementType: MovementType.capture,
+                  isLegal: true),
+            ),
           ),
         );
       }
@@ -243,8 +307,20 @@ class PieceMovementCalculator {
             positionX: x + 1 * sign,
             positionY: y + 1,
             movementType: MovementType.capture,
-            // TODO: check if king is under attack
-            isLegal: true,
+            isLegal: moveIsLegal(
+              board: boardMatrix,
+              colorToMove: model.color,
+              kingPosition: model.color == PieceColor.white
+                  ? whiteKingPosition
+                  : blackKingPosition,
+              movement: Movement(
+                  previousX: x,
+                  previousY: y,
+                  positionX: x + 1 * sign,
+                  positionY: y + 1,
+                  movementType: MovementType.normal,
+                  isLegal: true),
+            ),
           ),
         );
       }
@@ -268,8 +344,20 @@ class PieceMovementCalculator {
             positionX: x + 1 * sign,
             positionY: y - 1,
             movementType: MovementType.enPassant,
-            // TODO: check if king is under attack
-            isLegal: true,
+            isLegal: moveIsLegal(
+              board: boardMatrix,
+              colorToMove: model.color,
+              kingPosition: model.color == PieceColor.white
+                  ? whiteKingPosition
+                  : blackKingPosition,
+              movement: Movement(
+                  previousX: x,
+                  previousY: y,
+                  positionX: x + 1 * sign,
+                  positionY: y - 1,
+                  movementType: MovementType.enPassant,
+                  isLegal: true),
+            ),
           ),
         );
       }
@@ -290,8 +378,20 @@ class PieceMovementCalculator {
             positionX: x + 1 * sign,
             positionY: y + 1,
             movementType: MovementType.enPassant,
-            // TODO: check if king is under attack
-            isLegal: true,
+            isLegal: moveIsLegal(
+              board: boardMatrix,
+              colorToMove: model.color,
+              kingPosition: model.color == PieceColor.white
+                  ? whiteKingPosition
+                  : blackKingPosition,
+              movement: Movement(
+                  previousX: x,
+                  previousY: y,
+                  positionX: x + 1 * sign,
+                  positionY: y + 1,
+                  movementType: MovementType.enPassant,
+                  isLegal: true),
+            ),
           ),
         );
       }

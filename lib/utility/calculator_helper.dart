@@ -1,31 +1,18 @@
-part of 'calculate_legal_moves.dart';
-
-enum _Direction {
-  top,
-  bottom,
-  right,
-  left,
-  fromBLTTR,
-  fromTLTBR,
-  fromTRTBL,
-  fromBRTTL
-}
-
-enum Coordinate { x, y }
+part of 'calculate_movements.dart';
 
 List<Movement> _calculateLineMoves({
-  required _Direction direction,
+  required Direction direction,
   required PieceModel model,
-  required List<List<Piece?>> boardMatrix,
+  required Board boardMatrix,
 }) {
   List<Movement> moves = [];
 
   int x = model.piecePosition.positionX;
   int y = model.piecePosition.positionY;
 
-  int i = _calcIndexForLines(direction, Coordinate.x, x);
+  int i = calcIndexForLines(direction, Coordinate.x, x);
 
-  int j = _calcIndexForLines(direction, Coordinate.y, y);
+  int j = calcIndexForLines(direction, Coordinate.y, y);
 
   while (i >= 0 && i < 8 && j >= 0 && j < 8) {
     Piece? square = boardMatrix[i][j];
@@ -36,66 +23,21 @@ List<Movement> _calculateLineMoves({
       if (move.movementType == MovementType.capture) break;
     }
 
-    i = _calcIndexForLines(direction, Coordinate.x, i);
-    j = _calcIndexForLines(direction, Coordinate.y, j);
+    i = calcIndexForLines(direction, Coordinate.x, i);
+    j = calcIndexForLines(direction, Coordinate.y, j);
   }
 
   return moves;
 }
 
-int _calcIndexForLines(_Direction direction, Coordinate coordinate, int value) {
-  if (direction == _Direction.top && coordinate == Coordinate.x) {
-    return value - 1;
-  }
-  if (direction == _Direction.bottom && coordinate == Coordinate.x) {
-    return value + 1;
-  }
-  if (direction == _Direction.right && coordinate == Coordinate.y) {
-    return value + 1;
-  }
-  if (direction == _Direction.left && coordinate == Coordinate.y) {
-    return value - 1;
-  }
-
-  if (direction == _Direction.fromBLTTR && coordinate == Coordinate.x) {
-    return value - 1;
-  }
-  if (direction == _Direction.fromBLTTR && coordinate == Coordinate.y) {
-    return value + 1;
-  }
-
-  if (direction == _Direction.fromBRTTL && coordinate == Coordinate.x) {
-    return value - 1;
-  }
-  if (direction == _Direction.fromBRTTL && coordinate == Coordinate.y) {
-    return value - 1;
-  }
-
-  if (direction == _Direction.fromTLTBR && coordinate == Coordinate.x) {
-    return value + 1;
-  }
-  if (direction == _Direction.fromTLTBR && coordinate == Coordinate.y) {
-    return value + 1;
-  }
-
-  if (direction == _Direction.fromTRTBL && coordinate == Coordinate.x) {
-    return value + 1;
-  }
-  if (direction == _Direction.fromTRTBL && coordinate == Coordinate.y) {
-    return value - 1;
-  }
-
-  return value;
-}
-
 List<Movement> _calculateJumpMoves({
-  required _Direction direction,
+  required Direction direction,
   required PieceModel model,
-  required List<List<Piece?>> boardMatrix,
+  required Board boardMatrix,
 }) {
   List<Movement> moves = [];
 
-  List<int> result = _calcIndexForJump(
+  List<int> result = calcIndexForJump(
       direction, model.piecePosition.positionX, model.piecePosition.positionY);
 
   if (result[0] == 0) {
@@ -161,32 +103,6 @@ List<Movement> _calculateJumpMoves({
   return moves;
 }
 
-/// return [c,x,y,z]
-///
-/// c : Vertical or horizontal (0, 1)
-///
-/// x : two units of progress relative to variable c
-///
-/// y : one units of progress relative to variable c
-///
-/// z : one units of progress relative to variable c
-List<int> _calcIndexForJump(_Direction direction, int x, int y) {
-  if (direction == _Direction.top) {
-    return [0, x - 2, y + 1, y - 1];
-  }
-  if (direction == _Direction.bottom) {
-    return [0, x + 2, y + 1, y - 1];
-  }
-  if (direction == _Direction.left) {
-    return [1, y - 2, x - 1, x + 1];
-  }
-  if (direction == _Direction.right) {
-    return [1, y + 2, x - 1, x + 1];
-  }
-
-  throw Exception("Invalid direction");
-}
-
 Movement? _getMovement(
     PieceModel model, Piece? square, int x, int y, int i, int j) {
   if (square != null && square.pieceModel.color == model.color) {
@@ -202,22 +118,48 @@ Movement? _getMovement(
         isLegal: false);
   } else if (square != null && square.pieceModel.color != model.color) {
     return Movement(
-        previousX: x,
-        previousY: y,
-        positionX: i,
-        positionY: j,
-        movementType: MovementType.capture,
-        // TODO: check if king is under attack
-        isLegal: true);
+      previousX: x,
+      previousY: y,
+      positionX: i,
+      positionY: j,
+      movementType: MovementType.capture,
+      isLegal: PieceMovementCalculator.instance.moveIsLegal(
+        board: PieceMovementCalculator.instance.boardMatrix,
+        colorToMove: model.color,
+        kingPosition: model.color == PieceColor.white
+            ? PieceMovementCalculator.instance.whiteKingPosition
+            : PieceMovementCalculator.instance.blackKingPosition,
+        movement: Movement(
+            previousX: x,
+            previousY: y,
+            positionX: i,
+            positionY: j,
+            movementType: MovementType.capture,
+            isLegal: true),
+      ),
+    );
   } else if (square == null) {
     return Movement(
-        previousX: x,
-        previousY: y,
-        positionX: i,
-        positionY: j,
-        movementType: MovementType.normal,
-        // TODO: check if king is under attack
-        isLegal: true);
+      previousX: x,
+      previousY: y,
+      positionX: i,
+      positionY: j,
+      movementType: MovementType.normal,
+      isLegal: PieceMovementCalculator.instance.moveIsLegal(
+        board: PieceMovementCalculator.instance.boardMatrix,
+        colorToMove: model.color,
+        kingPosition: model.color == PieceColor.white
+            ? PieceMovementCalculator.instance.whiteKingPosition
+            : PieceMovementCalculator.instance.blackKingPosition,
+        movement: Movement(
+            previousX: x,
+            previousY: y,
+            positionX: i,
+            positionY: j,
+            movementType: MovementType.normal,
+            isLegal: true),
+      ),
+    );
   }
   return null;
 }
