@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_chess/constants/movement_types.dart';
+import '../constants/movement_types.dart';
 import '../constants/piece_colors.dart';
 import '../constants/pieces.dart';
 import '../model/piece_position_model.dart';
@@ -51,8 +51,6 @@ class BoardCubit extends Cubit<BoardState> {
               square.pieceModel, board,
               previousBlackMove: lastBlackMove,
               previousWhiteMove: lastWhiteMove);
-          _availableMoves
-              .forEach((e) => log("Move : <${e.positionX},${e.positionY}>"));
           emit(MovesCalculated(_availableMoves));
         } else {
           _availableMoves = PieceMovementCalculator.instance

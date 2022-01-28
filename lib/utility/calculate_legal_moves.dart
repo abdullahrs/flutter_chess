@@ -8,6 +8,8 @@ import '../constants/pieces.dart';
 import '../model/movement_model.dart';
 import '../model/piece_model.dart';
 
+part 'calculator_helper.dart';
+
 class PieceMovementCalculator {
   static final PieceMovementCalculator instance =
       PieceMovementCalculator._ctor();
@@ -19,6 +21,7 @@ class PieceMovementCalculator {
   List<Movement> calculateMoves(PieceModel? model, List<List<Piece?>> board,
       {Movement? previousWhiteMove, Movement? previousBlackMove}) {
     boardMatrix = board;
+    log("[calculateMoves] Piece : ${model?.piece}");
     switch (model?.piece) {
       case Pieces.king:
         {
@@ -26,19 +29,21 @@ class PieceMovementCalculator {
         }
       case Pieces.queen:
         {
-          return [];
-        }
-      case Pieces.bishop:
-        {
-          return [];
-        }
-      case Pieces.knight:
-        {
-          return [];
+          List<Movement> moves = _calculateCastleMoves(model!);
+          moves.addAll(_calculateBishopMoves(model));
+          return moves;
         }
       case Pieces.castle:
         {
-          return [];
+          return _calculateCastleMoves(model!);
+        }
+      case Pieces.bishop:
+        {
+          return _calculateBishopMoves(model!);
+        }
+      case Pieces.knight:
+        {
+          return _calculateKnightMoves(model!);
         }
       case Pieces.pawn:
         {
@@ -48,6 +53,71 @@ class PieceMovementCalculator {
       default:
         return [];
     }
+  }
+
+  List<Movement> _calculateBishopMoves(PieceModel model) {
+    List<Movement> moves = [];
+    // Bottom left to top right diagonal
+    moves.addAll(_calculateLineMoves(
+        boardMatrix: boardMatrix,
+        direction: _Direction.fromBLTTR,
+        model: model));
+    // Bottom right to top left diagonal
+    moves.addAll(_calculateLineMoves(
+        boardMatrix: boardMatrix,
+        direction: _Direction.fromBRTTL,
+        model: model));
+    // Top left to bottom right diagonal
+    moves.addAll(_calculateLineMoves(
+        boardMatrix: boardMatrix,
+        direction: _Direction.fromTLTBR,
+        model: model));
+    // Top right to bottom left diagonal
+    moves.addAll(_calculateLineMoves(
+        boardMatrix: boardMatrix,
+        direction: _Direction.fromTRTBL,
+        model: model));
+    return moves;
+  }
+
+  List<Movement> _calculateCastleMoves(PieceModel model) {
+    List<Movement> moves = [];
+
+    // Towards the white pieces
+    moves.addAll(_calculateLineMoves(
+        boardMatrix: boardMatrix, direction: _Direction.bottom, model: model));
+
+    // Towards the black pieces
+    moves.addAll(_calculateLineMoves(
+        boardMatrix: boardMatrix, direction: _Direction.top, model: model));
+
+    // To the right of the board relative to white, (towards the white's kingside)
+    moves.addAll(_calculateLineMoves(
+        boardMatrix: boardMatrix, direction: _Direction.right, model: model));
+
+    // To the right of the board relative to white, (towards the white's quennside)
+    moves.addAll(_calculateLineMoves(
+        boardMatrix: boardMatrix, direction: _Direction.left, model: model));
+    return moves;
+  }
+
+  List<Movement> _calculateKnightMoves(PieceModel model) {
+    List<Movement> moves = [];
+
+    // Top
+    moves.addAll(_calculateJumpMoves(
+        boardMatrix: boardMatrix, direction: _Direction.top, model: model));
+    // Right
+    moves.addAll(_calculateJumpMoves(
+        boardMatrix: boardMatrix, direction: _Direction.right, model: model));
+    // Bottom
+    moves.addAll(_calculateJumpMoves(
+        boardMatrix: boardMatrix, direction: _Direction.bottom, model: model));
+    // Left
+    moves.addAll(_calculateJumpMoves(
+        boardMatrix: boardMatrix, direction: _Direction.left, model: model));
+
+    return moves;
   }
 
   List<Movement> _calculatePawnMoves(PieceModel model,
@@ -60,9 +130,12 @@ class PieceMovementCalculator {
     // Variable that dynamically moves matrix indexes up or down
     int sign = model.color == PieceColor.white ? -1 : 1;
 
-    // Promote
+    // Promote, If first or eight rank empty or opposite color piece
     if ((x + 1 * sign == 0 || x + 1 * sign == 7) &&
-        boardMatrix[x + 1 * sign][y] == null) {
+        (boardMatrix[x + 1 * sign][y] == null ||
+            (boardMatrix[x + 1 * sign][y] != null &&
+                boardMatrix[x + 1 * sign][y]!.pieceModel.color !=
+                    model.color))) {
       moves.add(
         Movement(
           previousX: x,
@@ -143,7 +216,9 @@ class PieceMovementCalculator {
     Movement? movement = sign < 0 ? previousBlackMove : previousWhiteMove;
     if (movement == null) return moves;
 
-    if (y - 1 >= 0 && boardMatrix[x + 1 * sign][y - 1] == null && boardMatrix[x][y - 1] != null) {
+    if (y - 1 >= 0 &&
+        boardMatrix[x + 1 * sign][y - 1] == null &&
+        boardMatrix[x][y - 1] != null) {
       PieceModel piece = (boardMatrix[x][y - 1] as Piece).pieceModel;
       if (model.color != piece.color &&
           movement.positionX == piece.piecePosition.positionX &&
@@ -163,7 +238,9 @@ class PieceMovementCalculator {
       }
     }
     // Right En-passant
-    if (y + 1 < 8 && boardMatrix[x + 1 * sign][y + 1] == null && boardMatrix[x][y + 1] != null) {
+    if (y + 1 < 8 &&
+        boardMatrix[x + 1 * sign][y + 1] == null &&
+        boardMatrix[x][y + 1] != null) {
       PieceModel piece = (boardMatrix[x][y + 1] as Piece).pieceModel;
       if (model.color != piece.color &&
           movement.positionX == piece.piecePosition.positionX &&
