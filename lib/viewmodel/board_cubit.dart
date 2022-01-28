@@ -119,12 +119,20 @@ class BoardCubit extends Cubit<BoardState> {
     }
     board[move.positionX][move.positionY] = Piece(
       pieceModel: board[move.previousX][move.previousY]!.pieceModel.copyWith(
-          piecePosition: PiecePosition(move.positionX, move.positionY)),
+          piecePosition: PiecePosition(move.positionX, move.positionY),
+          moved: true),
     );
     // If the condition is true, the en-passant is applied
     if (move.movementType == MovementType.enPassant) {
       int sign = colorToMove == PieceColor.white ? -1 : 1;
       board[move.positionX - sign][move.positionY] = null;
+    } else if (move.movementType == MovementType.shortCastle) {
+      board[move.positionX][move.positionY - 1] = Piece(
+        pieceModel: board[move.positionX][move.positionY + 1]!.pieceModel.copyWith(
+            piecePosition: PiecePosition(move.positionX, move.positionY - 1),
+            moved: true),
+      );
+      board[move.positionX][move.positionY + 1] = null;
     }
     board[move.previousX][move.previousY] = null;
     assignPrevMove(move);

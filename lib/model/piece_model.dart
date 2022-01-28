@@ -6,18 +6,24 @@ class PieceModel {
   final Pieces piece;
   final PieceColor color;
   final PiecePosition piecePosition;
+  final bool moved;
 
   const PieceModel(
-      {required this.piece, required this.color, required this.piecePosition});
+      {required this.piece,
+      required this.color,
+      required this.piecePosition,
+      required this.moved});
 
   PieceModel copyWith(
       {Pieces? piece,
       PieceColor? color,
-      PiecePosition? piecePosition}) {
+      PiecePosition? piecePosition,
+      bool? moved}) {
     return PieceModel(
         piece: piece ?? this.piece,
         color: color ?? this.color,
-        piecePosition: piecePosition ?? this.piecePosition);
+        piecePosition: piecePosition ?? this.piecePosition,
+        moved: moved ?? this.moved);
   }
 
   String get imagePath {

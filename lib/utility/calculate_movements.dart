@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-
 import '../components/board/piece.dart';
 
 import '../constants/board_defination.dart';
@@ -105,6 +104,23 @@ class PieceMovementCalculator extends MovePolice {
         moves.add(move);
       }
     }
+
+    // Short castling
+    if ((boardMatrix[x][y]!.pieceModel.piecePosition ==
+                kInitialWhiteKingPosition ||
+            boardMatrix[x][y]!.pieceModel.piecePosition ==
+                kInitialBlackKingPosition) &&
+        !boardMatrix[x][y]!.pieceModel.moved &&
+        boardMatrix[x][y + 1] == null &&
+        boardMatrix[x][y + 2] == null &&
+        boardMatrix[x][y + 3] != null &&
+        boardMatrix[x][y + 3]!.pieceModel.piece == Pieces.castle &&
+        !boardMatrix[x][y + 3]!.pieceModel.moved) {
+      Movement? move = _getMovement(model, boardMatrix[x][y+2], x, y, x, y + 2,
+          type: MovementType.shortCastle);
+      if (move != null) moves.add(move);
+    }
+    // Long castling
 
     return moves;
   }

@@ -12,6 +12,7 @@ const Piece _blackCastle = Piece(
     piece: Pieces.castle,
     color: PieceColor.black,
     piecePosition: PiecePosition(0, 0),
+    moved: false,
   ),
 );
 const Piece _blackKnight = Piece(
@@ -19,6 +20,7 @@ const Piece _blackKnight = Piece(
     piece: Pieces.knight,
     color: PieceColor.black,
     piecePosition: PiecePosition(0, 1),
+    moved: false,
   ),
 );
 const Piece _blackBishop = Piece(
@@ -26,6 +28,7 @@ const Piece _blackBishop = Piece(
     piece: Pieces.bishop,
     color: PieceColor.black,
     piecePosition: PiecePosition(0, 2),
+    moved: false,
   ),
 );
 const Piece _blackQuenn = Piece(
@@ -33,18 +36,21 @@ const Piece _blackQuenn = Piece(
   piece: Pieces.queen,
   color: PieceColor.black,
   piecePosition: PiecePosition(0, 3),
+  moved: false,
 ));
 const Piece _blackKing = Piece(
     pieceModel: PieceModel(
   piece: Pieces.king,
   color: PieceColor.black,
   piecePosition: PiecePosition(0, 4),
+  moved: false,
 ));
 const Piece _blackPawn = Piece(
     pieceModel: PieceModel(
   piece: Pieces.pawn,
   color: PieceColor.black,
   piecePosition: PiecePosition(1, 0),
+  moved: false,
 ));
 
 /// White pieces
@@ -53,36 +59,42 @@ const Piece _whiteCastle = Piece(
   piece: Pieces.castle,
   color: PieceColor.white,
   piecePosition: PiecePosition(7, 0),
+  moved: false,
 ));
 const Piece _whiteKnight = Piece(
     pieceModel: PieceModel(
   piece: Pieces.knight,
   color: PieceColor.white,
   piecePosition: PiecePosition(7, 1),
+  moved: false,
 ));
 const Piece _whiteBishop = Piece(
     pieceModel: PieceModel(
   piece: Pieces.bishop,
   color: PieceColor.white,
   piecePosition: PiecePosition(7, 2),
+  moved: false,
 ));
 const Piece _whiteQuenn = Piece(
     pieceModel: PieceModel(
   piece: Pieces.queen,
   color: PieceColor.white,
   piecePosition: PiecePosition(7, 3),
+  moved: false,
 ));
 const Piece _whiteKing = Piece(
     pieceModel: PieceModel(
   piece: Pieces.king,
   color: PieceColor.white,
   piecePosition: PiecePosition(7, 4),
+  moved: false,
 ));
 const Piece _whitePawn = Piece(
     pieceModel: PieceModel(
   piece: Pieces.pawn,
   color: PieceColor.white,
   piecePosition: PiecePosition(6, 0),
+  moved: false,
 ));
 
 final List<List<Piece?>> kInitialBoard = [

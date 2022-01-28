@@ -104,7 +104,8 @@ List<Movement> _calculateJumpMoves({
 }
 
 Movement? _getMovement(
-    PieceModel model, Piece? square, int x, int y, int i, int j) {
+    PieceModel model, Piece? square, int x, int y, int i, int j,
+    {MovementType? type}) {
   if (square != null && square.pieceModel.color == model.color) {
     // If there are piece of the same color in the square, it means that the line is closed.
     // (for line and diagonal moves)
@@ -144,7 +145,7 @@ Movement? _getMovement(
       previousY: y,
       positionX: i,
       positionY: j,
-      movementType: MovementType.normal,
+      movementType: type ?? MovementType.normal,
       isLegal: PieceMovementCalculator.instance.moveIsLegal(
         board: PieceMovementCalculator.instance.boardMatrix,
         colorToMove: model.color,
@@ -156,7 +157,7 @@ Movement? _getMovement(
             previousY: y,
             positionX: i,
             positionY: j,
-            movementType: MovementType.normal,
+            movementType: type ?? MovementType.normal,
             isLegal: true),
       ),
     );
