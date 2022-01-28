@@ -26,8 +26,6 @@ class MovePolice {
       required Movement movement}) {
     bool kingSafety = kingIsSafe(
         board: board, kingPosition: kingPosition, kingColor: colorToMove);
-    // If king is safe we dont need to check below condition
-    if (kingSafety) return true;
     // If king is under attack check if movement interrupt the attack move,
     // it is legal if it interrupts the attack; if not, its illegal
     // Apply move
@@ -56,7 +54,7 @@ class MovePolice {
         board: tempBoard,
         kingPosition: tempKingPosition ?? kingPosition,
         kingColor: colorToMove);
-        
+
     return kingSafety;
   }
 
