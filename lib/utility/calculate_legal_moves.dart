@@ -25,7 +25,7 @@ class PieceMovementCalculator {
     switch (model?.piece) {
       case Pieces.king:
         {
-          return [];
+          return _calculateKingMoves(model!);
         }
       case Pieces.queen:
         {
@@ -53,6 +53,44 @@ class PieceMovementCalculator {
       default:
         return [];
     }
+  }
+
+  List<Movement> _calculateKingMoves(PieceModel model) {
+    List<Movement> moves = [];
+
+    int x = model.piecePosition.positionX;
+    int y = model.piecePosition.positionY;
+    /*
+     0  1  2
+     3  X  5
+     6  7  8
+    */
+    Map<int, List<int>> conversion = {
+      0: [-1, -1],
+      1: [-1, 0],
+      2: [-1, 1],
+      3: [0, -1],
+      5: [0, 1],
+      6: [1, -1],
+      7: [1, 0],
+      8: [1, 1],
+    };
+
+    for (int k = 0; k < 9; k++) {
+      if (k == 4) continue;
+      List<int> additions = conversion[k]!;
+      int newX = x + additions[0];
+      int newY = y + additions[1];
+      if (newX < 0 || newX > 7 || newY < 0 || newY > 7) continue;
+      Piece? square = boardMatrix[newX][newY];
+      Movement? move = _getMovement(model, square, x, y, newX, newY);
+      if (move != null) {
+        if (move.positionX == -1) continue;
+        moves.add(move);
+      }
+    }
+
+    return moves;
   }
 
   List<Movement> _calculateBishopMoves(PieceModel model) {
