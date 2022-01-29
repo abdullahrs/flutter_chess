@@ -116,12 +116,28 @@ class PieceMovementCalculator extends MovePolice {
         boardMatrix[x][y + 3] != null &&
         boardMatrix[x][y + 3]!.pieceModel.piece == Pieces.castle &&
         !boardMatrix[x][y + 3]!.pieceModel.moved) {
-      Movement? move = _getMovement(model, boardMatrix[x][y+2], x, y, x, y + 2,
+      Movement? move = _getMovement(
+          model, boardMatrix[x][y + 2], x, y, x, y + 2,
           type: MovementType.shortCastle);
       if (move != null) moves.add(move);
     }
     // Long castling
-
+    if ((boardMatrix[x][y]!.pieceModel.piecePosition ==
+                kInitialWhiteKingPosition ||
+            boardMatrix[x][y]!.pieceModel.piecePosition ==
+                kInitialBlackKingPosition) &&
+        !boardMatrix[x][y]!.pieceModel.moved &&
+        boardMatrix[x][y - 1] == null &&
+        boardMatrix[x][y - 2] == null &&
+        boardMatrix[x][y - 3] == null &&
+        boardMatrix[x][y - 4] != null &&
+        boardMatrix[x][y - 4]!.pieceModel.piece == Pieces.castle &&
+        !boardMatrix[x][y - 4]!.pieceModel.moved) {
+      Movement? move = _getMovement(
+          model, boardMatrix[x][y - 2], x, y, x, y - 2,
+          type: MovementType.longCastle);
+      if (move != null) moves.add(move);
+    }
     return moves;
   }
 

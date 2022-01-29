@@ -128,11 +128,24 @@ class BoardCubit extends Cubit<BoardState> {
       board[move.positionX - sign][move.positionY] = null;
     } else if (move.movementType == MovementType.shortCastle) {
       board[move.positionX][move.positionY - 1] = Piece(
-        pieceModel: board[move.positionX][move.positionY + 1]!.pieceModel.copyWith(
-            piecePosition: PiecePosition(move.positionX, move.positionY - 1),
-            moved: true),
+        pieceModel: board[move.positionX][move.positionY + 1]!
+            .pieceModel
+            .copyWith(
+                piecePosition:
+                    PiecePosition(move.positionX, move.positionY - 1),
+                moved: true),
       );
       board[move.positionX][move.positionY + 1] = null;
+    } else if (move.movementType == MovementType.longCastle) {
+      board[move.positionX][move.positionY + 1] = Piece(
+        pieceModel: board[move.positionX][move.positionY - 2]!
+            .pieceModel
+            .copyWith(
+                piecePosition:
+                    PiecePosition(move.positionX, move.positionY - 2),
+                moved: true),
+      );
+      board[move.positionX][move.positionY - 2] = null;
     }
     board[move.previousX][move.previousY] = null;
     assignPrevMove(move);
