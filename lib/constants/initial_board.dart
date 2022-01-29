@@ -9,7 +9,7 @@ import 'pieces.dart';
 /// Black pieces
 const Piece _blackCastle = Piece(
   pieceModel: PieceModel(
-    piece: Pieces.castle,
+    piece: Pieces.rook,
     color: PieceColor.black,
     piecePosition: PiecePosition(0, 0),
     moved: false,
@@ -56,7 +56,7 @@ const Piece _blackPawn = Piece(
 /// White pieces
 const Piece _whiteCastle = Piece(
     pieceModel: PieceModel(
-  piece: Pieces.castle,
+  piece: Pieces.rook,
   color: PieceColor.white,
   piecePosition: PiecePosition(7, 0),
   moved: false,

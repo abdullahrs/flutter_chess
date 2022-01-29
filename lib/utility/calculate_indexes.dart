@@ -1,5 +1,7 @@
 import '../constants/directions.dart';
 
+/// Updates the given value according to the direction of the move 
+/// and the coordinate of the value and returns.
 int calcIndexForLines(Direction direction, Coordinate coordinate, int value) {
   if (direction == Direction.top && coordinate == Coordinate.x) {
     return value - 1;

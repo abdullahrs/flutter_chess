@@ -1,15 +1,5 @@
 part of 'board_cubit.dart';
 
-// enum GameStatus {
-//   initial,
-//   continues,
-//   checkMate,
-//   stealmate,
-//   draw,
-//   resign,
-//   inefficient
-// }
-
 // enum GameEvent { movesCalculated, movePlayed }
 
 abstract class BoardState {}

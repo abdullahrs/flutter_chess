@@ -107,7 +107,7 @@ class MovePolice {
           }
 
           if (lines.contains(direction) &&
-              (square.pieceModel.piece == Pieces.castle ||
+              (square.pieceModel.piece == Pieces.rook ||
                   square.pieceModel.piece == Pieces.queen)) {
             return false;
           }

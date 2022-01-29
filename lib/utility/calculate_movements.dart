@@ -48,7 +48,7 @@ class PieceMovementCalculator extends MovePolice {
           moves.addAll(_calculateBishopMoves(model));
           return moves;
         }
-      case Pieces.castle:
+      case Pieces.rook:
         {
           return _calculateCastleMoves(model!);
         }
@@ -114,7 +114,7 @@ class PieceMovementCalculator extends MovePolice {
         boardMatrix[x][y + 1] == null &&
         boardMatrix[x][y + 2] == null &&
         boardMatrix[x][y + 3] != null &&
-        boardMatrix[x][y + 3]!.pieceModel.piece == Pieces.castle &&
+        boardMatrix[x][y + 3]!.pieceModel.piece == Pieces.rook &&
         !boardMatrix[x][y + 3]!.pieceModel.moved) {
       Movement? move = _getMovement(
           model, boardMatrix[x][y + 2], x, y, x, y + 2,
@@ -131,7 +131,7 @@ class PieceMovementCalculator extends MovePolice {
         boardMatrix[x][y - 2] == null &&
         boardMatrix[x][y - 3] == null &&
         boardMatrix[x][y - 4] != null &&
-        boardMatrix[x][y - 4]!.pieceModel.piece == Pieces.castle &&
+        boardMatrix[x][y - 4]!.pieceModel.piece == Pieces.rook &&
         !boardMatrix[x][y - 4]!.pieceModel.moved) {
       Movement? move = _getMovement(
           model, boardMatrix[x][y - 2], x, y, x, y - 2,

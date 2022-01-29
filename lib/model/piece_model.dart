@@ -36,7 +36,7 @@ class PieceModel {
         return color == PieceColor.white
             ? "assets/white_queen.png"
             : "assets/black_queen.png";
-      case Pieces.castle:
+      case Pieces.rook:
         return color == PieceColor.white
             ? "assets/white_castle.png"
             : "assets/black_castle.png";

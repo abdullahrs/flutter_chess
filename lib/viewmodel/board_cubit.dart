@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../utility/calculate_game_statuses.dart';
 import '../constants/board_defination.dart';
 import '../constants/movement_types.dart';
 import '../constants/piece_colors.dart';
@@ -150,6 +151,10 @@ class BoardCubit extends Cubit<BoardState> {
     board[move.previousX][move.previousY] = null;
     assignPrevMove(move);
     _changeColorToMove();
+    CalculateGameStatuses.instance.calculateGameStatus(
+        board: board,
+        whiteKingPos: whiteKingPosition,
+        blackKingPos: blackKingPosition);
     unSelectSquare();
     emit(PieceMovement());
   }
