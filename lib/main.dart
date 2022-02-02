@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'view/chess_page.dart';
 
 
 void main() {
-  runApp(const ChessApp());
+  runApp(const ProviderScope(child: ChessApp()));
 }
 
 class ChessApp extends StatelessWidget {

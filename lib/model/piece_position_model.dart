@@ -29,3 +29,7 @@ class PiecePosition {
   @override
   int get hashCode => positionY.hashCode ^ positionX.hashCode;
 }
+
+class NullPiecePosition extends PiecePosition {
+  NullPiecePosition() : super(-1, -1);
+}

@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../constants/game_statuses.dart';
 import '../utility/calculate_game_statuses.dart';
 import '../constants/board_defination.dart';
 import '../constants/movement_types.dart';
@@ -113,9 +114,9 @@ class BoardCubit extends Cubit<BoardState> {
         Pieces.king) {
       if (board[move.previousX][move.previousY]!.pieceModel.color ==
           PieceColor.white) {
-        whiteKingPosition = PiecePosition(move.previousX, move.previousY);
+        whiteKingPosition = PiecePosition(move.positionX, move.positionY);
       } else {
-        blackKingPosition = PiecePosition(move.previousX, move.previousY);
+        blackKingPosition = PiecePosition(move.positionX, move.positionY);
       }
     }
     board[move.positionX][move.positionY] = Piece(
@@ -143,7 +144,7 @@ class BoardCubit extends Cubit<BoardState> {
             .pieceModel
             .copyWith(
                 piecePosition:
-                    PiecePosition(move.positionX, move.positionY - 2),
+                    PiecePosition(move.positionX, move.positionY + 1),
                 moved: true),
       );
       board[move.positionX][move.positionY - 2] = null;
@@ -151,10 +152,12 @@ class BoardCubit extends Cubit<BoardState> {
     board[move.previousX][move.previousY] = null;
     assignPrevMove(move);
     _changeColorToMove();
-    CalculateGameStatuses.instance.calculateGameStatus(
+    CalculateGameStatuses.instance.updatePlayedMoves(board.boardStateToString());
+    GameStatus gameStatus = CalculateGameStatuses.instance.calculateGameStatus(
         board: board,
         whiteKingPos: whiteKingPosition,
         blackKingPos: blackKingPosition);
+    log("Game status : $gameStatus");
     unSelectSquare();
     emit(PieceMovement());
   }

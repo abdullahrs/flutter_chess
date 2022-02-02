@@ -34,8 +34,9 @@ class MovePolice {
 
     PiecePosition? tempKingPosition;
 
-    if (tempBoard[movement.previousX][movement.previousY]!.pieceModel.piece ==
-        Pieces.king) {
+    if (tempBoard[movement.previousX][movement.previousY] != null &&
+        tempBoard[movement.previousX][movement.previousY]!.pieceModel.piece ==
+            Pieces.king) {
       tempKingPosition = PiecePosition(movement.positionX, movement.positionY);
     }
 
@@ -111,6 +112,8 @@ class MovePolice {
                   square.pieceModel.piece == Pieces.queen)) {
             return false;
           }
+
+          if (selectedPieceColor != square.pieceModel.color) break;
         }
 
         i = calcIndexForLines(direction, Coordinate.x, i);

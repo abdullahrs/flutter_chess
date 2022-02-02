@@ -1,3 +1,5 @@
+import 'piece_colors.dart';
+
 import '../model/piece_position_model.dart';
 import '../components/board/piece.dart';
 import 'pieces.dart';
@@ -9,8 +11,8 @@ const PiecePosition kInitialBlackKingPosition = PiecePosition(0, 4);
 
 extension BoardExtension on Board {
   /*
-  Ra8 Nb8 Bc8 Qd8 Ke8 ...
-  Pa7 Pb7 Pc7 Pd7 Pe8
+  bRa8 bNb8 bBc8 bQd8 bKe8 ...
+  bPa7 bPb7 bPc7 bPd7 bPe8
   */
   String boardStateToString() {
     String boardString = "";
@@ -18,8 +20,9 @@ extension BoardExtension on Board {
     for (int i = 0; i < 8; i++) {
       for (int j = 0; j < 8; j++) {
         Piece? square = this[i][j];
-        if (this[i][j] != null) {
-          boardString += square!.pieceModel.piece.iccfNotation +
+        if (square != null) {
+          String color = square.pieceModel.color == PieceColor.white ? 'w' : 'b';
+          boardString +=  color+square.pieceModel.piece.iccfNotation +
               columnNames[j] +
               "${8 - i} ";
         } else {
