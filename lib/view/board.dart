@@ -5,39 +5,36 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../constants/movement_types.dart';
 // import '../viewmodel/board_cubit.dart';
 
-class ChessBoard extends StatelessWidget {
+class ChessBoard extends ConsumerWidget {
   const ChessBoard({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return Consumer(
-      builder: (BuildContext context, WidgetRef ref, Widget? child) =>
-          GridView.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 8,
-          childAspectRatio: 1,
-        ),
-        itemCount: 64,
-        itemBuilder: (BuildContext context, int index) {
-          int x = index ~/ 8;
-          int y = index % 8;
-          return InkWell(
-            onTap: () {
-              final controller = ref.read(boardControllerProvider.notifier);
-              controller.onClickSquare(x, y);
-            },
-            child: Container(
-              decoration: BoxDecoration(
-                color: (((index) ~/ 8) + index + 1) % 2 == 0
-                    ? const Color(0xFFb58763)
-                    : const Color(0xFFf0dab5),
-                border: buildBorder(context, ref, x, y),
-              ),
-              child: buildChild(context, ref, x, y),
-            ),
-          );
-        },
+  Widget build(BuildContext context, WidgetRef ref) {
+    return GridView.builder(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 8,
+        childAspectRatio: 1,
       ),
+      itemCount: 64,
+      itemBuilder: (BuildContext context, int index) {
+        int x = index ~/ 8;
+        int y = index % 8;
+        return InkWell(
+          onTap: () {
+            final controller = ref.read(boardControllerProvider.notifier);
+            controller.onClickSquare(x, y);
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: (((index) ~/ 8) + index + 1) % 2 == 0
+                  ? const Color(0xFFb58763)
+                  : const Color(0xFFf0dab5),
+              border: buildBorder(context, ref, x, y),
+            ),
+            child: buildChild(context, ref, x, y),
+          ),
+        );
+      },
     );
   }
 

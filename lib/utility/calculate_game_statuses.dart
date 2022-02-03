@@ -1,3 +1,6 @@
+import '../constants/piece_colors.dart';
+import 'calculate_movements.dart';
+
 import '../constants/board_defination.dart';
 import '../model/piece_position_model.dart';
 
@@ -13,17 +16,36 @@ class CalculateGameStatuses {
 
   static List<String> _moves = [];
 
+  List<String> get moves => _moves;
+
+  static int _fiftyMoveCounter = 0;
+
   void updatePlayedMoves(String str) {
     _moves.add(str);
   }
 
+  void updateMoveCounter(bool reset) {
+    if (reset) {
+      _fiftyMoveCounter = 0;
+    } else {
+      _fiftyMoveCounter++;
+    }
+  }
+
+  bool playableMoves = true;
+  late PieceColor moveColor;
+
   GameStatus calculateGameStatus(
       {required Board board,
       required PiecePosition whiteKingPos,
-      required PiecePosition blackKingPos}) {
+      required PiecePosition blackKingPos,
+      required bool checkAllMoves,
+      required PieceColor colorToMove}) {
     boardMatrix = board;
     whiteKingPosition = whiteKingPos;
     blackKingPosition = blackKingPos;
+    playableMoves = checkAllMoves;
+    moveColor = colorToMove;
 
     bool checkMate = _checkMate();
     if (checkMate) return GameStatus.checkMate;
@@ -39,7 +61,13 @@ class CalculateGameStatuses {
   }
 
   bool _checkMate() {
-    return false;
+    bool kingIsSafe = PieceMovementCalculator.instance.kingIsSafe(
+        board: boardMatrix,
+        kingPosition: moveColor == PieceColor.white
+            ? whiteKingPosition
+            : blackKingPosition,
+        kingColor: moveColor);
+    return !kingIsSafe && !playableMoves;
   }
 
   bool _drawByRepetition() {
@@ -94,14 +122,24 @@ class CalculateGameStatuses {
     // or one of the players may have an bishop and the other may not.
     if ((whiteKnightCount == 1 && blackKnightCount < 2) ||
         (blackKnightCount == 1 && whiteKnightCount < 2)) return true;
+
+    // One side can have one bishop and opposite side have knight or reverse
+    if ((whiteKnightCount == 1 && blackBishopCount == 1) ||
+        (blackKnightCount == 1 && whiteBishopCount == 1)) return true;
     return false;
   }
 
   bool _drawByFiftyMoveRule() {
-    return false;
+    return _fiftyMoveCounter == 50;
   }
 
   bool _drawByStalemate() {
-    return false;
+    bool kingIsSafe = PieceMovementCalculator.instance.kingIsSafe(
+        board: boardMatrix,
+        kingPosition: moveColor == PieceColor.white
+            ? whiteKingPosition
+            : blackKingPosition,
+        kingColor: moveColor);
+    return kingIsSafe && !playableMoves;
   }
 }

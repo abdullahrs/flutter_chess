@@ -1,17 +1,17 @@
-part of 'board_cubit.dart';
+// part of 'board_cubit.dart';
 
-// enum GameEvent { movesCalculated, movePlayed }
+// // enum GameEvent { movesCalculated, movePlayed }
 
-abstract class BoardState {}
+// abstract class BoardState {}
 
-class BoardInitial extends BoardState {}
+// class BoardInitial extends BoardState {}
 
-class MovesCalculated extends BoardState {
-  final List<Movement> movements;
+// class MovesCalculated extends BoardState {
+//   final List<Movement> movements;
 
-  MovesCalculated(this.movements);
-}
+//   MovesCalculated(this.movements);
+// }
 
-class OnClickReset extends BoardState {}
+// class OnClickReset extends BoardState {}
 
-class PieceMovement extends BoardState {}
+// class PieceMovement extends BoardState {}

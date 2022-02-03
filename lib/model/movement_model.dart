@@ -8,7 +8,7 @@ class Movement {
   final int positionY;
 
   final MovementType movementType;
-  
+
   final bool isLegal;
 
   Movement({

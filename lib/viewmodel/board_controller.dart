@@ -100,7 +100,51 @@ class BoardController extends StateNotifier<BoardModel> {
   }
 
   void move(Movement move) {
+    bool control = PieceMovementCalculator.instance.checkAllMoves(state.board,
+        whiteKingPos: state.whiteKingPosition,
+        blackKingPos: state.blackKingPosition);
+    GameStatus gameStatus = CalculateGameStatuses.instance.calculateGameStatus(
+        board: state.board,
+        whiteKingPos: state.whiteKingPosition,
+        blackKingPos: state.blackKingPosition,
+        checkAllMoves: control,
+        colorToMove: state.colorToMove);
+    log("Game status : $gameStatus");
     if (!move.isLegal) return;
+    // If player played with pawn or captures piece, fifty move rule reseted
+    if (state.board[move.previousX][move.previousY]!.pieceModel.piece ==
+            Pieces.pawn ||
+        move.movementType == MovementType.capture) {
+      _updateMoveCounter(true);
+    } else {
+      _updateMoveCounter(false);
+    }
+    _makeMove(move);
+    assignPrevMove(move);
+    _changeColorToMove();
+    CalculateGameStatuses.instance
+        .updatePlayedMoves(state.board.boardStateToString());
+    unSelectSquare();
+  }
+
+  void unSelectSquare() {
+    state =
+        state.copyWith(availableMoves: [], selectedSquare: NullPiecePosition());
+  }
+
+  void assignPrevMove(Movement movement) {
+    if (state.colorToMove == PieceColor.white) {
+      state = state.copyWith(lastWhiteMove: movement);
+    } else {
+      state = state.copyWith(lastBlackMove: movement);
+    }
+  }
+
+  void _updateMoveCounter(bool bool) {
+    CalculateGameStatuses.instance.updateMoveCounter(bool);
+  }
+
+  void _makeMove(Movement move) {
     if (state.board[move.previousX][move.previousY]!.pieceModel.piece ==
         Pieces.king) {
       if (state.board[move.previousX][move.previousY]!.pieceModel.color ==
@@ -142,28 +186,5 @@ class BoardController extends StateNotifier<BoardModel> {
       state.board[move.positionX][move.positionY - 2] = null;
     }
     state.board[move.previousX][move.previousY] = null;
-    assignPrevMove(move);
-    _changeColorToMove();
-    CalculateGameStatuses.instance
-        .updatePlayedMoves(state.board.boardStateToString());
-    GameStatus gameStatus = CalculateGameStatuses.instance.calculateGameStatus(
-        board: state.board,
-        whiteKingPos: state.whiteKingPosition,
-        blackKingPos: state.blackKingPosition);
-    log("Game status : $gameStatus");
-    unSelectSquare();
-  }
-
-  void unSelectSquare() {
-    state =
-        state.copyWith(availableMoves: [], selectedSquare: NullPiecePosition());
-  }
-
-  void assignPrevMove(Movement movement) {
-    if (state.colorToMove == PieceColor.white) {
-      state = state.copyWith(lastWhiteMove: movement);
-    } else {
-      state = state.copyWith(lastBlackMove: movement);
-    }
   }
 }

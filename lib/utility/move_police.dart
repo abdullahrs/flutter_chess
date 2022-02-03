@@ -1,3 +1,5 @@
+import 'calculate_movements.dart';
+
 import '../model/piece_position_model.dart';
 import '../model/movement_model.dart';
 
@@ -24,39 +26,16 @@ class MovePolice {
       required PiecePosition kingPosition,
       required PieceColor colorToMove,
       required Movement movement}) {
-    bool kingSafety = kingIsSafe(
-        board: board, kingPosition: kingPosition, kingColor: colorToMove);
+    // bool kingSafety = kingIsSafe(
+    //     board: board, kingPosition: kingPosition, kingColor: colorToMove);
     // If king is under attack check if movement interrupt the attack move,
     // it is legal if it interrupts the attack; if not, its illegal
     // Apply move
-    Board tempBoard =
-        board.map((List<Piece?> e) => List<Piece?>.from(e)).toList();
-
-    PiecePosition? tempKingPosition;
-
-    if (tempBoard[movement.previousX][movement.previousY] != null &&
-        tempBoard[movement.previousX][movement.previousY]!.pieceModel.piece ==
-            Pieces.king) {
-      tempKingPosition = PiecePosition(movement.positionX, movement.positionY);
-    }
-
-    tempBoard[movement.positionX][movement.positionY] = Piece(
-      pieceModel: board[movement.previousX][movement.previousY]!
-          .pieceModel
-          .copyWith(
-              piecePosition:
-                  PiecePosition(movement.positionX, movement.positionY)),
-    );
-
-    tempBoard[movement.previousX][movement.previousY] = null;
-
-    // Check again
-    kingSafety = kingIsSafe(
-        board: tempBoard,
-        kingPosition: tempKingPosition ?? kingPosition,
-        kingColor: colorToMove);
-
-    return kingSafety;
+    return checkMove(
+        board: board,
+        kingPosition: kingPosition,
+        colorToMove: colorToMove,
+        movement: movement);
   }
 
   /// x : square x coordinate
@@ -169,5 +148,60 @@ class MovePolice {
       }
     }
     return true;
+  }
+
+  bool checkMove(
+      {required Board board,
+      required PiecePosition kingPosition,
+      required PieceColor colorToMove,
+      required Movement movement}) {
+    Board tempBoard =
+        board.map((List<Piece?> e) => List<Piece?>.from(e)).toList();
+
+    PiecePosition? tempKingPosition;
+
+    if (tempBoard[movement.previousX][movement.previousY] != null &&
+        tempBoard[movement.previousX][movement.previousY]!.pieceModel.piece ==
+            Pieces.king) {
+      tempKingPosition = PiecePosition(movement.positionX, movement.positionY);
+    }
+
+    tempBoard[movement.positionX][movement.positionY] = Piece(
+      pieceModel: board[movement.previousX][movement.previousY]!
+          .pieceModel
+          .copyWith(
+              piecePosition:
+                  PiecePosition(movement.positionX, movement.positionY)),
+    );
+
+    tempBoard[movement.previousX][movement.previousY] = null;
+
+    // Check again
+    return kingIsSafe(
+        board: tempBoard,
+        kingPosition: tempKingPosition ?? kingPosition,
+        kingColor: colorToMove);
+  }
+
+  /// true : continues
+  ///
+  /// false : check mate || stalemate
+  bool checkAllMoves(Board board,
+      {Movement? previousWhiteMove,
+      Movement? previousBlackMove,
+      required PiecePosition whiteKingPos,
+      required PiecePosition blackKingPos}) {
+    int numberOfMoves = 0;
+    for (List<Piece?> row in board) {
+      for (Piece? square in row) {
+        if (square == null) continue;
+        List<Movement> moves = PieceMovementCalculator.instance.calculateMoves(
+            square.pieceModel, board,
+            whiteKingPos: whiteKingPos, blackKingPos: blackKingPos);
+        numberOfMoves +=
+            moves.where((element) => element.isLegal).toList().length;
+      }
+    }
+    return numberOfMoves > 0;
   }
 }

@@ -36,7 +36,6 @@ class PieceMovementCalculator extends MovePolice {
     boardMatrix = [...board];
     whiteKingPosition = whiteKingPos;
     blackKingPosition = blackKingPos;
-    log("[calculateMoves] Piece : ${model?.piece}");
     switch (model?.piece) {
       case Pieces.king:
         {
