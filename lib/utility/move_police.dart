@@ -190,11 +190,13 @@ class MovePolice {
       {Movement? previousWhiteMove,
       Movement? previousBlackMove,
       required PiecePosition whiteKingPos,
-      required PiecePosition blackKingPos}) {
+      required PiecePosition blackKingPos,
+      required PieceColor colorToMove}) {
     int numberOfMoves = 0;
     for (List<Piece?> row in board) {
       for (Piece? square in row) {
         if (square == null) continue;
+        if(square.pieceModel.color == colorToMove) continue;
         List<Movement> moves = PieceMovementCalculator.instance.calculateMoves(
             square.pieceModel, board,
             whiteKingPos: whiteKingPos, blackKingPos: blackKingPos);

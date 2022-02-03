@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import '../components/board/piece.dart';
 

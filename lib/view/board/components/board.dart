@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-// import 'package:flutter_bloc/flutter_bloc.dart';
 import '../viewmodel/board_behavior_controllers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../constants/movement_types.dart';
-// import '../viewmodel/board_cubit.dart';
+import '../../../constants/movement_types.dart';
 
 class ChessBoard extends ConsumerWidget {
   const ChessBoard({Key? key}) : super(key: key);

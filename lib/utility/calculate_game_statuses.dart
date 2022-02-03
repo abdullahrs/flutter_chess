@@ -64,8 +64,8 @@ class CalculateGameStatuses {
     bool kingIsSafe = PieceMovementCalculator.instance.kingIsSafe(
         board: boardMatrix,
         kingPosition: moveColor == PieceColor.white
-            ? whiteKingPosition
-            : blackKingPosition,
+            ? blackKingPosition
+            : whiteKingPosition,
         kingColor: moveColor);
     return !kingIsSafe && !playableMoves;
   }

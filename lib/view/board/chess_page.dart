@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../constants/assets.dart';
-import 'board.dart';
+import '../../constants/assets.dart';
+import 'components/board.dart';
 
 class ChessPage extends StatelessWidget {
   const ChessPage({Key? key}) : super(key: key);

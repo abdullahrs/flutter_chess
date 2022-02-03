@@ -1,18 +1,18 @@
 import 'dart:developer';
 
-import '../model/board_model.dart';
-import '../components/board/piece.dart';
-import '../constants/game_statuses.dart';
-import '../constants/movement_types.dart';
-import '../constants/piece_colors.dart';
-import '../constants/pieces.dart';
-import '../model/movement_model.dart';
-import '../model/piece_position_model.dart';
-import '../utility/calculate_game_statuses.dart';
-import '../utility/calculate_movements.dart';
+import '../../../model/board_model.dart';
+import '../../../components/board/piece.dart';
+import '../../../constants/game_statuses.dart';
+import '../../../constants/movement_types.dart';
+import '../../../constants/piece_colors.dart';
+import '../../../constants/pieces.dart';
+import '../../../model/movement_model.dart';
+import '../../../model/piece_position_model.dart';
+import '../../../utility/calculate_game_statuses.dart';
+import '../../../utility/calculate_movements.dart';
 
-import '../constants/board_defination.dart';
-import '../constants/initial_board.dart';
+import '../../../constants/board_defination.dart';
+import '../../../constants/initial_board.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class BoardController extends StateNotifier<BoardModel> {
@@ -59,12 +59,9 @@ class BoardController extends StateNotifier<BoardModel> {
           );
         }
       } else {
-        log("else unSelectSquare state : $state");
         unSelectSquare();
       }
     } else {
-      log("state : $state");
-
       if (square != null &&
           square.pieceModel.piecePosition == state.selectedSquare) {
         unSelectSquare();
@@ -100,16 +97,6 @@ class BoardController extends StateNotifier<BoardModel> {
   }
 
   void move(Movement move) {
-    bool control = PieceMovementCalculator.instance.checkAllMoves(state.board,
-        whiteKingPos: state.whiteKingPosition,
-        blackKingPos: state.blackKingPosition);
-    GameStatus gameStatus = CalculateGameStatuses.instance.calculateGameStatus(
-        board: state.board,
-        whiteKingPos: state.whiteKingPosition,
-        blackKingPos: state.blackKingPosition,
-        checkAllMoves: control,
-        colorToMove: state.colorToMove);
-    log("Game status : $gameStatus");
     if (!move.isLegal) return;
     // If player played with pawn or captures piece, fifty move rule reseted
     if (state.board[move.previousX][move.previousY]!.pieceModel.piece ==
@@ -120,6 +107,17 @@ class BoardController extends StateNotifier<BoardModel> {
       _updateMoveCounter(false);
     }
     _makeMove(move);
+    bool control = PieceMovementCalculator.instance.checkAllMoves(state.board,
+        whiteKingPos: state.whiteKingPosition,
+        blackKingPos: state.blackKingPosition,
+        colorToMove: state.colorToMove);
+    GameStatus gameStatus = CalculateGameStatuses.instance.calculateGameStatus(
+        board: state.board,
+        whiteKingPos: state.whiteKingPosition,
+        blackKingPos: state.blackKingPosition,
+        checkAllMoves: control,
+        colorToMove: state.colorToMove);
+    log("Game status : $gameStatus");
     assignPrevMove(move);
     _changeColorToMove();
     CalculateGameStatuses.instance

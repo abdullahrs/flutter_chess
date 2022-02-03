@@ -140,28 +140,37 @@ Movement? _getMovement(
       ),
     );
   } else if (square == null) {
+    bool? control;
+    // If movement type is castling check the related squares for safety
+    if (type != null && type == MovementType.shortCastle) {
+      control = PieceMovementCalculator.instance.squareIsSafe(
+          PieceMovementCalculator.instance.boardMatrix, x, y + 1, model.color);
+    } else if (type != null && type == MovementType.longCastle) {
+      control = PieceMovementCalculator.instance.squareIsSafe(
+          PieceMovementCalculator.instance.boardMatrix, x, y - 1, model.color);
+    }
     return Movement(
       previousX: x,
       previousY: y,
       positionX: i,
       positionY: j,
       movementType: type ?? MovementType.normal,
-      isLegal: PieceMovementCalculator.instance.moveIsLegal(
-        board: PieceMovementCalculator.instance.boardMatrix,
-        colorToMove: model.color,
-        kingPosition: model.color == PieceColor.white
-            ? PieceMovementCalculator.instance.whiteKingPosition
-            : PieceMovementCalculator.instance.blackKingPosition,
-        movement: Movement(
-            previousX: x,
-            previousY: y,
-            positionX: i,
-            positionY: j,
-            movementType: type ?? MovementType.normal,
-            isLegal: true),
-      ),
+      isLegal: (control ?? true) &&
+          PieceMovementCalculator.instance.moveIsLegal(
+            board: PieceMovementCalculator.instance.boardMatrix,
+            colorToMove: model.color,
+            kingPosition: model.color == PieceColor.white
+                ? PieceMovementCalculator.instance.whiteKingPosition
+                : PieceMovementCalculator.instance.blackKingPosition,
+            movement: Movement(
+                previousX: x,
+                previousY: y,
+                positionX: i,
+                positionY: j,
+                movementType: type ?? MovementType.normal,
+                isLegal: true),
+          ),
     );
   }
   return null;
 }
-

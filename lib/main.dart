@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'view/chess_page.dart';
+import 'view/board/chess_page.dart';
 
 
 void main() {
