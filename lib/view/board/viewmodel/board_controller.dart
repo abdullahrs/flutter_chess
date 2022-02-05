@@ -16,7 +16,13 @@ import '../../../constants/initial_board.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class BoardController extends StateNotifier<BoardModel> {
-  BoardController() : super(BoardModel(board: kInitialBoard));
+  BoardController()
+      : super(
+          BoardModel(
+              board: kInitialBoard
+                  .map((List<Piece?> e) => List<Piece?>.from(e))
+                  .toList()),
+        );
 
   void _changeColorToMove() {
     if (state.colorToMove == PieceColor.white) {
@@ -118,6 +124,7 @@ class BoardController extends StateNotifier<BoardModel> {
         checkAllMoves: control,
         colorToMove: state.colorToMove);
     log("Game status : $gameStatus");
+    state = state.copyWith(gameStatus: gameStatus);
     assignPrevMove(move);
     _changeColorToMove();
     CalculateGameStatuses.instance
@@ -184,5 +191,11 @@ class BoardController extends StateNotifier<BoardModel> {
       state.board[move.positionX][move.positionY - 2] = null;
     }
     state.board[move.previousX][move.previousY] = null;
+  }
+
+  void resetBoard() {
+    state = state.initialModel;
+    CalculateGameStatuses.instance.reset();
+    print(kInitialBoard);
   }
 }

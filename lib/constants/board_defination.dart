@@ -1,3 +1,5 @@
+import 'board_consts.dart';
+
 import 'piece_colors.dart';
 
 import '../model/piece_position_model.dart';
@@ -16,14 +18,15 @@ extension BoardExtension on Board {
   */
   String boardStateToString() {
     String boardString = "";
-    List<String> columnNames = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
     for (int i = 0; i < 8; i++) {
       for (int j = 0; j < 8; j++) {
         Piece? square = this[i][j];
         if (square != null) {
-          String color = square.pieceModel.color == PieceColor.white ? 'w' : 'b';
-          boardString +=  color+square.pieceModel.piece.iccfNotation +
-              columnNames[j] +
+          String color =
+              square.pieceModel.color == PieceColor.white ? 'w' : 'b';
+          boardString += color +
+              square.pieceModel.piece.iccfNotation +
+              kColumnNames[j] +
               "${8 - i} ";
         } else {
           boardString += "    ";

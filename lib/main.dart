@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'view/board/chess_page.dart';
+import 'view/board/page/chess_page.dart';
 
 
 void main() {
@@ -12,9 +12,10 @@ class ChessApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: ChessPage(),
+      home: const ChessPage(),
+      theme: ThemeData.dark(),
     );
   }
 }

@@ -142,4 +142,10 @@ class CalculateGameStatuses {
         kingColor: moveColor);
     return kingIsSafe && !playableMoves;
   }
+
+  void reset() {
+    _fiftyMoveCounter = 0;
+    _moves = [];
+    playableMoves = true;
+  }
 }

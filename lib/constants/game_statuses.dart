@@ -25,13 +25,13 @@ enum GameStatus {
   drawByAgreement,
 
   /// If both sides have any one of the following, and there are no pawns on the board:
-  /// 
+  ///
   /// - A lone king
-  /// 
+  ///
   /// - A king and bishop
-  /// 
+  ///
   /// - A king and knight
-  /// 
+  ///
   /// In the above scenarios the game will end in a draw,
   drawByInsufficientMaterial,
 
@@ -46,4 +46,29 @@ enum GameStatus {
 
   /// If one of the players runs out of time, the player whose time runs out loses.
   timeRunOut,
+}
+
+extension GameStatusExtension on GameStatus {
+  String getStatusText(String winner) {
+    switch (this) {
+      case GameStatus.checkMate:
+        return 'CHECK MATE!\n$winner WINS';
+      case GameStatus.resign:
+        return '$winner WINS by resignation';
+      case GameStatus.timeRunOut:
+        return 'Time run out!\n$winner WINS';
+      case GameStatus.drawByAgreement:
+        return 'Draw by agreement';
+      case GameStatus.drawByFiftyMoveRule:
+        return 'Draw by fifty move rule';
+      case GameStatus.drawByInsufficientMaterial:
+        return 'Draw causes by insufficient material';
+      case GameStatus.drawByRepetition:
+        return 'Draw by repetition';
+      case GameStatus.drawByStalemate:
+        return 'Stalemate!';
+      default:
+        return 'Default';
+    }
+  }
 }
