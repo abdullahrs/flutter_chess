@@ -71,9 +71,10 @@ class _ChessPageState extends ConsumerState<ChessPage> {
             builder: (_) => const DurationPickerDialog()).then((value) {
           _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
             final colorToMove = ref.read(boardControllerProvider);
-            ref
-                .read(timeControllerProvider.notifier)
-                .decrement(colorToMove.colorToMove);
+            final timeController = ref.read(timeControllerProvider.notifier);
+            if (timeController.getTime(colorToMove.colorToMove) > -1) {
+              timeController.decrement(colorToMove.colorToMove);
+            }
           });
           return value;
         });

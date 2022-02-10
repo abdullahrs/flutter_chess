@@ -1,3 +1,5 @@
+import 'package:flutter_chess/constants/game_statuses.dart';
+
 import '../../../model/timer_model.dart';
 import 'time_controller.dart';
 
@@ -12,7 +14,10 @@ final boardControllerProvider =
 final resultController = Provider((ref) {
   final status =
       ref.watch(boardControllerProvider.select((value) => value.gameStatus));
-
+  final timeStatus = ref.watch(timeControllerProvider);
+  if (timeStatus.blackTime < 0 || timeStatus.whiteTime < 0) {
+    return GameStatus.timeRunOut;
+  }
   return status;
 });
 
