@@ -1,25 +1,23 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_chess/constants/game_statuses.dart';
+import '../viewmodel/board_behavior_controllers.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../extensions/buildcontext_extension.dart';
+import '../../../extensions/int_time_extension.dart';
 import '../../../style/chess_style.dart';
 import '../../../constants/piece_colors.dart';
 
-class TimerSection extends StatefulWidget {
+class TimerSection extends StatelessWidget {
   final PieceColor color;
-  final int initialTimePerSeconds;
-  const TimerSection(
-      {Key? key, required this.color, this.initialTimePerSeconds = 120})
-      : super(key: key);
+  const TimerSection({Key? key, required this.color}) : super(key: key);
 
-  @override
-  State<TimerSection> createState() => _TimerSectionState();
-}
-
-class _TimerSectionState extends State<TimerSection> {
   @override
   Widget build(BuildContext context) {
     return Container(
       height: context.dynamicHeight(0.2),
-      decoration: const BoxDecoration(color: Colors.brown),
+      decoration: BoxDecoration(color: Colors.brown[400]!.withOpacity(0.5)),
       child: Row(
         children: [
           Container(
@@ -31,10 +29,16 @@ class _TimerSectionState extends State<TimerSection> {
             decoration: BoxDecoration(
                 color: ChessStyle.dialogBackgroundColor,
                 border: Border.all(color: ChessStyle.dialogTextColor)),
-            child: Text(
-              widget.initialTimePerSeconds.toString(),
-              style: context.appTextTheme.bodyText2,
-            ),
+            child: Consumer(
+                builder: (BuildContext context, WidgetRef ref, Widget? child) {
+              final _controller = ref.watch(timeControllerProvider);
+              return Text(
+                color == PieceColor.white
+                    ? _controller.whiteTime.timeString
+                    : _controller.blackTime.timeString,
+                style: context.appTextTheme.bodyText2,
+              );
+            }),
           )
         ],
       ),

@@ -19,10 +19,15 @@ class BoardController extends StateNotifier<BoardModel> {
   BoardController()
       : super(
           BoardModel(
-              board: kInitialBoard
-                  .map((List<Piece?> e) => List<Piece?>.from(e))
-                  .toList()),
+            board: kInitialBoard
+                .map((List<Piece?> e) => List<Piece?>.from(e))
+                .toList(),
+          ),
         );
+
+  void changeStatus(GameStatus status) {
+    state = state.copyWith(gameStatus: status);
+  }
 
   void _changeColorToMove() {
     if (state.colorToMove == PieceColor.white) {

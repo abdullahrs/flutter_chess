@@ -1,4 +1,8 @@
 enum GameStatus {
+  /// Before duration selection
+  initial,
+
+  /// After duration selection
   continues,
 
   /// When a king is attacked, it is called check.

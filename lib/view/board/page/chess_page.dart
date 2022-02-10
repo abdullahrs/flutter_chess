@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_chess/constants/piece_colors.dart';
-import 'package:flutter_chess/view/board/components/timer_section.dart';
+import '../../../components/dialog/duration_picker_dialog.dart';
+import '../../../constants/piece_colors.dart';
+import '../components/timer_section.dart';
 import '../../../components/dialog/result_dialog.dart';
 import '../../../constants/game_statuses.dart';
 import '../viewmodel/board_behavior_controllers.dart';
@@ -8,27 +11,25 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../constants/assets.dart';
 import '../components/board.dart';
 
-class ChessPage extends ConsumerWidget {
+class ChessPage extends ConsumerStatefulWidget {
   const ChessPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final result = ref.watch<GameStatus>(resultController);
-    if (result != GameStatus.continues) {
-      final board = ref.read(boardControllerProvider);
-      WidgetsBinding.instance!.addPostFrameCallback((_) async {
-        await showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (_) => ResultDialog(
-            dialogText: result.getStatusText(board.colorToMove.name),
-            onClick: () {
-              ref.read(boardControllerProvider.notifier).resetBoard();
-            },
-          ),
-        );
-      });
-    }
+  ConsumerState<ChessPage> createState() => _ChessPageState();
+}
+
+class _ChessPageState extends ConsumerState<ChessPage> {
+  late Timer _timer;
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    preBuildSetup();
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -55,5 +56,46 @@ class ChessPage extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  void preBuildSetup() {
+    final result = ref.watch<GameStatus>(resultController);
+    final board = ref.read(boardControllerProvider);
+
+    if (result == GameStatus.initial) {
+      WidgetsBinding.instance!.addPostFrameCallback((_) async {
+        final controller = ref.read(boardControllerProvider.notifier);
+        controller.changeStatus(GameStatus.continues);
+        List<int> result = await showDialog(
+            context: context,
+            builder: (_) => const DurationPickerDialog()).then((value) {
+          _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+            final colorToMove = ref.read(boardControllerProvider);
+            ref
+                .read(timeControllerProvider.notifier)
+                .decrement(colorToMove.colorToMove);
+          });
+          return value;
+        });
+        if (result.isNotEmpty) {
+          final timeController = ref.read(timeControllerProvider.notifier);
+          timeController.init(result[0] * 60, result[1]);
+        }
+      });
+    }
+    if (result != GameStatus.continues && result != GameStatus.initial) {
+      WidgetsBinding.instance!.addPostFrameCallback((_) async {
+        await showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => ResultDialog(
+            dialogText: result.getStatusText(board.colorToMove.name),
+            onClick: () {
+              ref.read(boardControllerProvider.notifier).resetBoard();
+            },
+          ),
+        );
+      });
+    }
   }
 }

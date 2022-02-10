@@ -46,12 +46,20 @@ class ChessBoard extends ConsumerWidget {
       onWillAccept: (data) => true, //data is Piece ? true : false,
       onAccept: (String? data) {
         if (data != null) {
+          ref
+              .read(timeControllerProvider.notifier)
+              .increment(ref.read(boardControllerProvider).colorToMove);
           controller.onClickSquare(int.parse(data[0]), int.parse(data[2]));
           controller.onClickSquare(x, y);
         }
       },
       builder: (context, candidateData, rejectedData) => InkWell(
           onTap: () {
+            if (ref.read(boardControllerProvider).selectedSquare != null) {
+              ref
+                  .read(timeControllerProvider.notifier)
+                  .increment(ref.read(boardControllerProvider).colorToMove);
+            }
             controller.onClickSquare(x, y);
           },
           child: square(ref, x, y, index, context)),

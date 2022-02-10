@@ -27,7 +27,7 @@ class BoardModel {
     this.availableMoves = const <Movement>[],
     this.whiteKingPosition = const PiecePosition(7, 4),
     this.blackKingPosition = const PiecePosition(0, 4),
-    this.gameStatus = GameStatus.continues,
+    this.gameStatus = GameStatus.initial,
   });
 
   BoardModel copyWith({
@@ -66,6 +66,6 @@ class BoardModel {
         availableMoves: const <Movement>[],
         whiteKingPosition: const PiecePosition(7, 4),
         blackKingPosition: const PiecePosition(0, 4),
-        gameStatus: GameStatus.continues);
+        gameStatus: GameStatus.initial);
   }
 }

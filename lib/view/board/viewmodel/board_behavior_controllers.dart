@@ -1,3 +1,6 @@
+import '../../../model/timer_model.dart';
+import 'time_controller.dart';
+
 import '../../../model/board_model.dart';
 import 'board_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,3 +15,7 @@ final resultController = Provider((ref) {
 
   return status;
 });
+
+final timeControllerProvider =
+    StateNotifierProvider<TimeController, TimerModel>(
+        (ref) => TimeController());
