@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../extensions/buildcontext_extension.dart';
 import '../../../constants/board_consts.dart';
 import '../../../style/chess_style.dart';
 import '../viewmodel/board_behavior_controllers.dart';
@@ -26,8 +27,8 @@ class ChessBoard extends ConsumerWidget {
                 data: '$x,$y',
                 child: _dragTarget(ref, x, y, index),
                 feedback: SizedBox(
-                    height: 32,
-                    width: 32,
+                    height: (context.screenWidth / 8),
+                    width: (context.screenWidth / 8),
                     child: Material(child: _dragTarget(ref, x, y, index))),
                 childWhenDragging: Container(
                     color: (((index) ~/ 8) + index + 1) % 2 == 0
@@ -44,7 +45,6 @@ class ChessBoard extends ConsumerWidget {
     return DragTarget(
       onWillAccept: (data) => true, //data is Piece ? true : false,
       onAccept: (String? data) {
-        print("accepted $data <$x,$y>");
         if (data != null) {
           controller.onClickSquare(int.parse(data[0]), int.parse(data[2]));
           controller.onClickSquare(x, y);
@@ -123,14 +123,14 @@ class ChessBoard extends ConsumerWidget {
       return (state.board[x][y] != null)
           ? state.board[x][y]
           : SizedBox.expand(
-            child: Padding(
+              child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: CircleAvatar(
                   backgroundColor: move.isLegal ? Colors.green : Colors.grey,
                   radius: 2,
                 ),
               ),
-          );
+            );
     }
     return state.board[x][y];
   }

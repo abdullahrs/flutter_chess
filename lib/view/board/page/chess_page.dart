@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chess/constants/piece_colors.dart';
+import 'package:flutter_chess/view/board/components/timer_section.dart';
 import '../../../components/dialog/result_dialog.dart';
 import '../../../constants/game_statuses.dart';
 import '../viewmodel/board_behavior_controllers.dart';
@@ -12,8 +14,8 @@ class ChessPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final result = ref.watch<GameStatus>(resultController);
-    final board = ref.read(boardControllerProvider);
     if (result != GameStatus.continues) {
+      final board = ref.read(boardControllerProvider);
       WidgetsBinding.instance!.addPostFrameCallback((_) async {
         await showDialog(
           context: context,
@@ -40,12 +42,14 @@ class ChessPage extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: const [
-              Spacer(flex: 2),
+              Flexible(child: TimerSection(color: PieceColor.black)),
+              Spacer(flex: 1),
               Flexible(
                 flex: 6,
                 child: ChessBoard(),
               ),
-              Spacer(flex: 2),
+              Spacer(flex: 1),
+              Flexible(child: TimerSection(color: PieceColor.white)),
             ],
           ),
         ),

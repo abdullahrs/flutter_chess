@@ -1,7 +1,6 @@
 import '../components/board/piece.dart';
 import '../constants/game_statuses.dart';
 import '../constants/initial_board.dart';
-
 import '../constants/board_defination.dart';
 import '../constants/piece_colors.dart';
 import 'movement_model.dart';
